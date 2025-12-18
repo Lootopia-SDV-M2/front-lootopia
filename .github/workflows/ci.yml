@@ -20,9 +20,4 @@ jobs:
           cache-dependency-path: "**/package-lock.json"
       - run: npm ci
       - run: npm run lint
-      - name: Mirror to Potowai
-        if: success()
-        run: |
-          git config --unset-all http.https://github.com/.extraheader
-          git remote add potowai https://x-access-token:${{ secrets.POTOWAI_TOKEN }}@github.com/Potowai/front-lootopia.git
-          git push potowai HEAD:main
+
