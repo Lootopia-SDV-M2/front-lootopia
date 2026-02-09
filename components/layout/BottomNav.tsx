@@ -1,21 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Map, User, Rocket } from "lucide-react";
+import { Home, Map, User, Rocket, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/lib/stores";
+import { useAppStore, useAuthStore } from "@/lib/stores";
 
-/**
- * Game-themed mobile bottom navigation bar.
- * Full-width, docked, with glowing active-state icons.
- */
 export function BottomNav() {
   const { activeTab, setActiveTab } = useAppStore();
+  const user = useAuthStore((s) => s.user);
+
+  const isPartner = user?.role === "partner";
 
   const navItems = [
     { id: "home" as const, href: "/", icon: Home, label: "Accueil" },
     { id: "map" as const, href: "/map", icon: Map, label: "Carte" },
-    { id: "create" as const, href: "/create", icon: Rocket, label: "Créer" },
+    isPartner
+      ? { id: "create" as const, href: "/create", icon: Rocket, label: "Créer" }
+      : {
+          id: "hunts" as const,
+          href: "/hunts",
+          icon: Compass,
+          label: "Chasses",
+        },
     { id: "profile" as const, href: "/profile", icon: User, label: "Profil" },
   ];
 
@@ -36,11 +42,9 @@ export function BottomNav() {
                 !isActive && "text-brand-muted hover:text-brand-light"
               )}
             >
-              {/* Active indicator glow */}
               {isActive && (
                 <div className="from-brand-primary/20 via-brand-primary/5 absolute inset-x-0 top-0 h-full bg-gradient-to-t to-transparent" />
               )}
-              {/* Top line indicator */}
               {isActive && (
                 <div className="bg-brand-primary absolute top-0 h-1 w-12 rounded-b-full" />
               )}

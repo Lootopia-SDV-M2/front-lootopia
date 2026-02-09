@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Trophy,
   Star,
@@ -81,9 +82,15 @@ function HuntHistoryCard({ hunt }: { hunt: CompletedHunt }) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { player, getXpProgress } = usePlayerStore();
-  const { logout } = useAuthStore();
+  const { logout, isAuthenticated, user: authUser } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -108,9 +115,20 @@ export default function ProfilePage() {
           title="Profil non trouvé"
           description="Connectez-vous pour voir votre progression."
           action={
-            <Link href="/login">
-              <Button variant="primary">Connexion</Button>
-            </Link>
+            isAuthenticated ? (
+              <Button
+                variant="ghost"
+                className="text-brand-danger"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
+                Déconnexion
+              </Button>
+            ) : (
+              <Link href="/login">
+                <Button variant="primary">Connexion</Button>
+              </Link>
+            )
           }
         />
       </div>
@@ -239,7 +257,7 @@ export default function ProfilePage() {
           variant="ghost"
           size="md"
           className="text-brand-danger w-full"
-          onClick={logout}
+          onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
           Déconnexion

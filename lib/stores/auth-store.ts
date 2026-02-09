@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Player } from "@/types";
+import { apiClient } from "@/lib/api/api-client";
+import { usePlayerStore } from "./player-store";
 
 // Dummy storage for SSR
 const dummyStorage = {
@@ -19,18 +20,12 @@ interface AuthUser {
 }
 
 interface AuthState {
-  /** Current authenticated user */
   user: AuthUser | null;
-  /** JWT token (simulated) */
   token: string | null;
-  /** Whether auth is being checked */
   isLoading: boolean;
-  /** Whether user is authenticated */
   isAuthenticated: boolean;
-  /** Auth error message */
   error: string | null;
 
-  // Actions
   login: (
     email: string,
     password: string,
@@ -39,16 +34,31 @@ interface AuthState {
   register: (
     username: string,
     email: string,
-    password: string
+    password: string,
+    role?: "CHERCHEUR" | "ORGANISATEUR"
   ) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => boolean;
   clearError: () => void;
 }
 
-/**
- * Generate a fake JWT token for simulation
- */
+interface AuthApiResponse {
+  token: string;
+  role: string;
+  username: string;
+}
+
+function mapBackendRole(role: string): "player" | "partner" | "admin" {
+  switch (role) {
+    case "ORGANISATEUR":
+      return "partner";
+    case "ADMIN":
+      return "admin";
+    default:
+      return "player";
+  }
+}
+
 function generateFakeToken(user: AuthUser): string {
   const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const payload = btoa(
@@ -56,21 +66,22 @@ function generateFakeToken(user: AuthUser): string {
       sub: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
+      role:
+        user.role === "partner"
+          ? "ORGANISATEUR"
+          : user.role === "admin"
+            ? "ADMIN"
+            : "CHERCHEUR",
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     })
   );
   const signature = btoa("fake-signature-" + user.id);
   return `${header}.${payload}.${signature}`;
 }
 
-/**
- * Simulate user database for demo
- */
 const mockUsers: Map<string, { user: AuthUser; password: string }> = new Map();
 
-// Add a demo user
 mockUsers.set("demo@lootopia.fr", {
   user: {
     id: "user-demo-001",
@@ -82,7 +93,6 @@ mockUsers.set("demo@lootopia.fr", {
   password: "Demo123!",
 });
 
-// Add a partner demo user
 mockUsers.set("partenaire@lootopia.fr", {
   user: {
     id: "partner-demo-001",
@@ -94,10 +104,19 @@ mockUsers.set("partenaire@lootopia.fr", {
   password: "Partner123!",
 });
 
-/**
- * Auth store for managing authentication state.
- * Simulates JWT authentication for development.
- */
+function setAuthCookie(token: string) {
+  if (typeof document !== "undefined") {
+    document.cookie = `lootopia-auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+  }
+}
+
+function clearAuthCookie() {
+  if (typeof document !== "undefined") {
+    document.cookie =
+      "lootopia-auth-token=; path=/; max-age=0; SameSite=Strict";
+  }
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -107,87 +126,132 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       error: null,
 
-      login: async (email, password, rememberMe = false) => {
+      login: async (email, password) => {
         set({ isLoading: true, error: null });
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        try {
+          const response = await apiClient.post<AuthApiResponse>(
+            "/api/auth/login",
+            { username: email, password }
+          );
 
-        // Check mock users
-        const userRecord = mockUsers.get(email.toLowerCase());
+          const user: AuthUser = {
+            id: response.username,
+            username: response.username,
+            email,
+            role: mapBackendRole(response.role),
+            createdAt: new Date().toISOString(),
+          };
 
-        if (!userRecord || userRecord.password !== password) {
           set({
+            user,
+            token: response.token,
+            isAuthenticated: true,
             isLoading: false,
-            error: "Email ou mot de passe incorrect",
+            error: null,
           });
-          return false;
+
+          usePlayerStore.getState().initializePlayer(user.username, email);
+          setAuthCookie(response.token);
+          return true;
+        } catch {
+          // Fallback to mock users if backend is unreachable
+          const userRecord = mockUsers.get(email.toLowerCase());
+
+          if (!userRecord || userRecord.password !== password) {
+            set({
+              isLoading: false,
+              error: "Email ou mot de passe incorrect",
+            });
+            return false;
+          }
+
+          const token = generateFakeToken(userRecord.user);
+
+          set({
+            user: userRecord.user,
+            token,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+
+          usePlayerStore
+            .getState()
+            .initializePlayer(userRecord.user.username, userRecord.user.email);
+          setAuthCookie(token);
+          return true;
         }
-
-        const token = generateFakeToken(userRecord.user);
-
-        set({
-          user: userRecord.user,
-          token,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-
-        // Set cookie for middleware
-        if (typeof document !== "undefined") {
-          document.cookie = `lootopia-auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
-        }
-
-        return true;
       },
 
-      register: async (username, email, password) => {
+      register: async (username, email, password, role = "CHERCHEUR") => {
         set({ isLoading: true, error: null });
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+          const response = await apiClient.post<AuthApiResponse>(
+            "/api/auth/register",
+            { username, email, password, role }
+          );
 
-        // Check if user already exists
-        if (mockUsers.has(email.toLowerCase())) {
+          const user: AuthUser = {
+            id: response.username,
+            username: response.username,
+            email,
+            role: mapBackendRole(response.role),
+            createdAt: new Date().toISOString(),
+          };
+
           set({
+            user,
+            token: response.token,
+            isAuthenticated: true,
             isLoading: false,
-            error: "Cet email est déjà utilisé",
+            error: null,
           });
-          return false;
+
+          usePlayerStore.getState().initializePlayer(user.username, email);
+          setAuthCookie(response.token);
+          return true;
+        } catch {
+          // Fallback to mock
+          if (mockUsers.has(email.toLowerCase())) {
+            set({
+              isLoading: false,
+              error: "Cet email est déjà utilisé",
+            });
+            return false;
+          }
+
+          const frontendRole = mapBackendRole(role);
+          const newUser: AuthUser = {
+            id: `user-${Date.now()}`,
+            username,
+            email: email.toLowerCase(),
+            role: frontendRole,
+            createdAt: new Date().toISOString(),
+          };
+
+          mockUsers.set(email.toLowerCase(), {
+            user: newUser,
+            password,
+          });
+
+          const token = generateFakeToken(newUser);
+
+          set({
+            user: newUser,
+            token,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+
+          usePlayerStore
+            .getState()
+            .initializePlayer(newUser.username, newUser.email);
+          setAuthCookie(token);
+          return true;
         }
-
-        // Create new user
-        const newUser: AuthUser = {
-          id: `user-${Date.now()}`,
-          username,
-          email: email.toLowerCase(),
-          role: "player",
-          createdAt: new Date().toISOString(),
-        };
-
-        // Add to mock database
-        mockUsers.set(email.toLowerCase(), {
-          user: newUser,
-          password,
-        });
-
-        const token = generateFakeToken(newUser);
-
-        set({
-          user: newUser,
-          token,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-
-        // Set cookie for middleware
-        if (typeof document !== "undefined") {
-          document.cookie = `lootopia-auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
-        }
-
-        return true;
       },
 
       logout: () => {
@@ -197,22 +261,13 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           error: null,
         });
-
-        // Clear cookie
-        if (typeof document !== "undefined") {
-          document.cookie =
-            "lootopia-auth-token=; path=/; max-age=0; SameSite=Strict";
-        }
+        clearAuthCookie();
       },
 
       checkAuth: () => {
-        // This function is problematic in SSR and its logic is mostly handled by the middleware.
-        // For client-side rehydration, the persist middleware is enough.
-        // We can simplify or remove this. For now, just ensure it's client-side.
         if (typeof window === "undefined") {
           return get().isAuthenticated;
         }
-        // The rest of the logic is for client-side checks, which is fine.
         return get().isAuthenticated;
       },
 

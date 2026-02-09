@@ -61,7 +61,8 @@ export default function LoginPage() {
       formData.rememberMe
     );
     if (success) {
-      router.push("/map");
+      const user = useAuthStore.getState().user;
+      router.push(user?.role === "partner" ? "/create" : "/map");
     }
   };
 

@@ -3,7 +3,7 @@
 import { useCreateHuntStore } from "@/lib/stores";
 import { Input, Button, Card } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { MapPin, Trash2, ChevronLeft, Check } from "lucide-react";
+import { MapPin, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { HuntStepFormData } from "@/lib/validations";
 
 interface StepTwoFormProps {
@@ -115,15 +115,15 @@ export function StepTwoForm({
   expandedStepId,
   setExpandedStepId,
 }: StepTwoFormProps) {
-  const { draft, updateStep, removeStep, isSubmitting } = useCreateHuntStore();
+  const { draft, updateStep, removeStep } = useCreateHuntStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (draft.steps.length === 0) return;
+    if (draft.steps.length < 2) return;
     onSubmit();
   };
 
-  const isFormValid = draft.steps.length >= 1;
+  const isFormValid = draft.steps.length >= 2;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -165,11 +165,10 @@ export function StepTwoForm({
           type="submit"
           variant="primary"
           size="lg"
-          disabled={!isFormValid || isSubmitting}
-          isLoading={isSubmitting}
+          disabled={!isFormValid}
         >
-          <Check className="h-4 w-4" />
-          Créer la chasse
+          Continuer
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </form>

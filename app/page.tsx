@@ -34,7 +34,7 @@ function HeroSection() {
               Explorer les chasses
             </Button>
           </Link>
-          <Link href="/create">
+          <Link href="/register?role=organisateur">
             <Button variant="secondary" size="lg" className="w-full sm:w-auto">
               <Rocket className="mr-2 h-5 w-5" />
               Devenir partenaire
@@ -173,7 +173,7 @@ function PartnerCtaSection() {
                 création simple et puissant.
               </p>
               <div className="mt-8">
-                <Link href="/create">
+                <Link href="/register?role=organisateur">
                   <Button variant="secondary" size="lg">
                     Créer une chasse
                     <ArrowRight className="ml-2 h-4 w-4" />

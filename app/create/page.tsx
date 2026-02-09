@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -9,11 +9,12 @@ import {
   Check,
   MapPin,
   FileText,
+  Gift,
   Sparkles,
   Rocket,
 } from "lucide-react";
 import { Button, Card } from "@/components/ui";
-import { StepOneForm, StepTwoForm } from "@/components/create";
+import { StepOneForm, StepTwoForm, StepThreeForm } from "@/components/create";
 import { useCreateHuntStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
 
@@ -33,8 +34,9 @@ const CreatorMap = dynamic(
  */
 function StepIndicator({ currentStep }: { currentStep: number }) {
   const steps = [
-    { number: 1, label: "Informations", icon: FileText },
+    { number: 1, label: "Infos", icon: FileText },
     { number: 2, label: "Parcours", icon: MapPin },
+    { number: 3, label: "Cadeaux", icon: Gift },
   ];
 
   return (
@@ -222,11 +224,15 @@ export default function CreateHuntPage() {
 
             <StepTwoForm
               onBack={prevStep}
-              onSubmit={handleSubmit}
+              onSubmit={nextStep}
               expandedStepId={expandedStepId}
               setExpandedStepId={setExpandedStepId}
             />
           </div>
+        )}
+
+        {currentStep === 3 && (
+          <StepThreeForm onBack={prevStep} onSubmit={handleSubmit} />
         )}
       </Card>
 

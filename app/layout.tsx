@@ -1,3 +1,4 @@
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Fira_Code } from "next/font/google"; // Outfit for modern simple headings
 import { Header, BottomNav } from "@/components/layout";
 import { cn } from "@/lib/utils";
