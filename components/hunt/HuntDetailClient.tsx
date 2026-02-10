@@ -71,7 +71,7 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8">
         <Alert variant="error" title="Chasse introuvable">
-          Cette chasse au trésor n'existe pas ou a été supprimée.
+          Cette chasse au trésor n&apos;existe pas ou a été supprimée.
         </Alert>
         <div className="mt-4">
           <Link href="/map">
@@ -126,16 +126,16 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-brand-light font-heading text-2xl font-bold">
+          <h1 className="font-heading text-2xl font-bold text-text-heading">
             {hunt.title}
           </h1>
           <div className="mt-1 flex items-center gap-4">
             <Badge>{getDifficultyLabel(hunt.difficulty)}</Badge>
-            <span className="text-brand-muted flex items-center gap-1.5 text-sm">
+            <span className="flex items-center gap-1.5 text-sm text-text-muted">
               <Clock size={14} />
               {hunt.duration}
             </span>
-            <span className="text-brand-muted flex items-center gap-1.5 text-sm">
+            <span className="flex items-center gap-1.5 text-sm text-text-muted">
               <Users size={14} />
               {hunt.participantsCount}/{hunt.maxParticipants}
             </span>
@@ -144,15 +144,15 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
       </div>
 
       <Card variant="glass" className="mb-6 p-5">
-        <p className="text-brand-muted mb-4">{hunt.description}</p>
-        <div className="text-brand-primary flex items-center gap-2 font-heading font-bold">
+        <p className="mb-4 text-text-body">{hunt.description}</p>
+        <div className="flex items-center gap-2 font-heading font-bold text-primary">
           <Trophy size={16} />
           <span>{hunt.reward} XP</span>
         </div>
       </Card>
 
       <div className="mb-8">
-        <h2 className="text-brand-light mb-3 font-heading text-lg font-bold">
+        <h2 className="mb-3 font-heading text-lg font-bold text-text-heading">
           Progression
         </h2>
         <div className="flex w-full items-center gap-2">
@@ -160,10 +160,10 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
             <div
               key={step.id}
               className={cn(
-                "h-2 flex-1 rounded-full transition-all",
+                "h-2 flex-1 rounded-full transition-all duration-500",
                 completedSteps.has(step.id) || index < currentStepIndex
-                  ? "bg-brand-primary"
-                  : "bg-brand-surface"
+                  ? "bg-gradient-to-r from-primary to-gold-600"
+                  : "bg-background-surface-alt"
               )}
             />
           ))}
@@ -172,29 +172,29 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
 
       {currentStep && !allStepsCompleted && (
         <Card variant="default" className="mb-6 overflow-hidden">
-          <div className="bg-brand-surface p-5">
-            <h3 className="text-brand-light font-heading text-xl font-bold">
+          <div className="border-b border-black/[0.06] bg-background-surface-alt p-5">
+            <h3 className="font-heading text-xl font-bold text-text-heading">
               Étape {currentStep.order}: {currentStep.title}
             </h3>
           </div>
           <div className="space-y-6 p-5">
-            <p className="text-brand-muted">{currentStep.description}</p>
+            <p className="text-text-body">{currentStep.description}</p>
 
-            <div className="bg-brand-surface flex items-center gap-4 rounded-xl p-4">
+            <div className="flex items-center gap-4 rounded-xl border border-black/[0.06] bg-background-surface-alt p-4">
               <Navigation
                 className={cn(
                   "h-8 w-8",
-                  isWithinRange ? "text-brand-accent" : "text-brand-muted"
+                  isWithinRange ? "text-primary" : "text-text-muted"
                 )}
               />
               <div>
-                <p className="text-brand-muted text-sm font-bold uppercase">
+                <p className="text-xs font-bold uppercase tracking-wider text-text-muted">
                   Distance
                 </p>
                 <p
                   className={cn(
                     "font-heading text-2xl font-bold",
-                    isWithinRange ? "text-brand-accent" : "text-brand-light"
+                    isWithinRange ? "text-primary" : "text-text-heading"
                   )}
                 >
                   {distance !== null ? `${distance}m` : "Calcul..."}
@@ -208,7 +208,7 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
             </div>
 
             <div>
-              <h4 className="text-brand-muted mb-2 font-heading text-sm font-bold uppercase tracking-wider">
+              <h4 className="mb-2 font-heading text-xs font-bold uppercase tracking-wider text-text-muted">
                 Indices
               </h4>
               <div className="space-y-2">
@@ -216,14 +216,14 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
                   <div
                     key={clue.id}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg border p-3",
+                      "flex items-center gap-3 rounded-xl border p-3",
                       clue.unlocked
-                        ? "border-brand-primary/20 bg-brand-primary/10 text-brand-light"
-                        : "bg-brand-dark/50 text-brand-muted border-border"
+                        ? "border-primary/20 bg-primary/[0.06] text-text-heading"
+                        : "border-black/[0.06] bg-background-surface-alt text-text-muted"
                     )}
                   >
                     {clue.unlocked ? (
-                      <Unlock size={16} className="text-brand-primary" />
+                      <Unlock size={16} className="text-primary" />
                     ) : (
                       <Lock size={16} />
                     )}
@@ -262,11 +262,11 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
 
       {allStepsCompleted && (
         <Card variant="glass" className="p-8 text-center">
-          <CheckCircle className="text-brand-success mx-auto mb-4 h-16 w-16" />
-          <h3 className="text-brand-light font-heading text-2xl font-bold">
+          <CheckCircle className="mx-auto mb-4 h-16 w-16 text-status-success" />
+          <h3 className="font-heading text-2xl font-bold text-text-heading">
             Chasse Terminée !
           </h3>
-          <p className="text-brand-muted my-2">
+          <p className="my-2 text-text-muted">
             Félicitations, vous avez complété cette aventure !
           </p>
           <Link href="/profile">

@@ -74,11 +74,11 @@ export function VictoryModal({
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 0.5}s`,
                 backgroundColor: [
-                  "#f59e0b",
-                  "#22c55e",
-                  "#3b82f6",
-                  "#ef4444",
-                  "#8b5cf6",
+                  "#f5c542",
+                  "#34d399",
+                  "#e879a5",
+                  "#f87171",
+                  "#eab308",
                 ][Math.floor(Math.random() * 5)],
               }}
             />
@@ -88,46 +88,48 @@ export function VictoryModal({
 
       {/* Modal content */}
       <div className="animate-bounce-in relative z-10 w-full max-w-md">
-        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 p-1 shadow-2xl">
-          <div className="relative rounded-[22px] bg-white p-8 text-center dark:bg-gray-900">
+        <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-gold-500 to-secondary p-[2px] shadow-glow-strong">
+          <div className="relative rounded-[22px] bg-white p-8 text-center">
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="absolute right-4 top-4 rounded-xl p-2 text-text-muted hover:bg-background-surface-alt"
             >
               <X className="h-5 w-5" />
             </button>
 
             {/* Trophy icon */}
-            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg">
-              <Trophy className="h-12 w-12 text-white" />
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-gold-600 shadow-glow">
+              <Trophy className="h-12 w-12 text-primary-foreground" />
             </div>
 
             {/* Victory text */}
             <div className="mb-2 flex items-center justify-center gap-2">
-              <Sparkles className="h-5 w-5 text-amber-500" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h2 className="font-heading text-2xl font-bold text-text-heading">
                 Félicitations !
               </h2>
-              <Sparkles className="h-5 w-5 text-amber-500" />
+              <Sparkles className="h-5 w-5 text-primary" />
             </div>
 
-            <p className="mb-6 text-gray-600 dark:text-gray-300">
+            <p className="mb-6 text-text-body">
               Vous avez terminé la chasse
               <br />
-              <span className="font-semibold text-gray-900 dark:text-white">
+              <span className="font-semibold text-text-heading">
                 &quot;{huntTitle}&quot;
               </span>
             </p>
 
             {/* XP earned */}
-            <div className="mb-8 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 p-6 dark:from-amber-950/50 dark:to-orange-950/50">
-              <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400">
+            <div className="mb-8 rounded-2xl border border-primary/10 bg-primary/[0.06] p-6">
+              <div className="flex items-center justify-center gap-2 text-primary">
                 <Star className="h-6 w-6 fill-current" />
-                <span className="text-4xl font-bold">+{animatedXp}</span>
+                <span className="font-heading text-4xl font-bold">
+                  +{animatedXp}
+                </span>
                 <span className="text-lg font-medium">XP</span>
               </div>
-              <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+              <p className="mt-2 text-sm text-text-muted">
                 Points d&apos;expérience gagnés
               </p>
             </div>

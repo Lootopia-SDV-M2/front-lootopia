@@ -42,11 +42,11 @@ export function PageContainer({
       {(title || subtitle) && (
         <header className="mb-8">
           {title && (
-            <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-text-heading md:text-3xl">
               {title}
             </h1>
           )}
-          {subtitle && <p className="text-muted-foreground mt-2">{subtitle}</p>}
+          {subtitle && <p className="mt-2 text-text-muted">{subtitle}</p>}
         </header>
       )}
       {children}

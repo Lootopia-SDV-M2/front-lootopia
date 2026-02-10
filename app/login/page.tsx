@@ -69,17 +69,17 @@ export default function LoginPage() {
   return (
     <AuroraBackground className="min-h-screen">
       <div className="z-10 w-full max-w-md px-4">
-        <div className="mb-8 text-center">
+        <div className="mb-10 text-center">
           <Link
             href="/"
-            className="inline-block transition-transform hover:scale-105"
+            className="inline-block transition-transform duration-300 hover:scale-105"
           >
             <Image
               src="/icons/favicon.png"
               alt="Lootopia"
-              width={80}
-              height={80}
-              className="mx-auto mb-6 rounded-2xl shadow-lg"
+              width={72}
+              height={72}
+              className="mx-auto mb-6 rounded-2xl shadow-glow"
             />
           </Link>
           <div className="space-y-2">
@@ -93,16 +93,16 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Card className="premium-card p-6 md:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card variant="glass" className="p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && <Alert variant="error">{error}</Alert>}
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-muted">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium tracking-wider text-text-muted">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted" />
+                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <Input
                   type="email"
                   name="email"
@@ -110,7 +110,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleChange}
                   error={!!validationErrors.email}
-                  className="pl-12"
+                  className="pl-11"
                 />
               </div>
               {validationErrors.email && (
@@ -120,12 +120,12 @@ export default function LoginPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-text-muted">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium tracking-wider text-text-muted">
                 Mot de passe
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted" />
+                <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -133,12 +133,12 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   error={!!validationErrors.password}
-                  className="pl-12 pr-12"
+                  className="pl-11 pr-11"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted transition-colors hover:text-primary"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted transition-colors hover:text-text-heading"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -161,13 +161,13 @@ export default function LoginPage() {
                   name="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                  className="h-4 w-4 rounded border-black/10 bg-background-surface-alt text-primary focus:ring-primary/30"
                 />
                 <span className="text-text-muted">Se souvenir de moi</span>
               </label>
               <Link
                 href="/forgot-password"
-                className="text-sm font-medium text-primary hover:text-primary-hover hover:underline"
+                className="text-sm font-medium text-primary/80 transition-colors hover:text-primary"
               >
                 Mot de passe oublié ?
               </Link>
@@ -177,7 +177,7 @@ export default function LoginPage() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full text-lg"
+              className="w-full"
               isLoading={isLoading}
             >
               {!isLoading && <LogIn className="h-5 w-5" />}
@@ -190,9 +190,9 @@ export default function LoginPage() {
           Pas encore de compte ?{" "}
           <Link
             href="/register"
-            className="font-bold text-primary hover:underline"
+            className="font-semibold text-primary transition-colors hover:text-primary-hover"
           >
-            S'inscrire
+            S&apos;inscrire
           </Link>
         </p>
       </div>

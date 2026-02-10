@@ -22,7 +22,7 @@ export function LoadingScreen({
       )}
     >
       <Spinner size="lg" />
-      <p className="text-muted-foreground animate-pulse text-sm font-medium">
+      <p className="animate-pulse text-sm font-medium text-text-muted">
         {message}
       </p>
     </div>

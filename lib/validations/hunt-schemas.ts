@@ -52,7 +52,7 @@ export const huntInfoSchema = z.object({
   duration: z
     .string()
     .min(1, "La durée est requise")
-    .regex(/^\d+h(\d{2})?$/, "Format invalide (ex: 1h30, 2h00)"),
+    .regex(/^\d{2}:\d{2}$/, "Format invalide (ex: 01:30, 02:00)"),
   reward: z.number().min(10, "Minimum 10 XP").max(5000, "Maximum 5000 XP"),
   maxParticipants: z
     .number()

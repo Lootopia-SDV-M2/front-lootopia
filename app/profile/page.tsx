@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Trophy,
-  Star,
-  MapPin,
   Settings,
   LogOut,
   Award,
@@ -13,6 +11,7 @@ import {
   Flame,
   Camera,
   ChevronRight,
+  MapPin,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, EmptyState } from "@/components/shared";
@@ -33,20 +32,8 @@ function formatDate(dateString: string): string {
 function LevelBadge({ level }: { level: number }) {
   return (
     <div className="relative h-20 w-20">
-      <div
-        className="bg-brand-accent absolute inset-0 animate-pulse blur-md"
-        style={{
-          clipPath:
-            "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-        }}
-      />
-      <div
-        className="bg-brand-surface text-brand-light relative z-10 flex h-full w-full items-center justify-center text-3xl font-bold"
-        style={{
-          clipPath:
-            "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-        }}
-      >
+      <div className="absolute inset-0 animate-glow rounded-2xl bg-primary/20 blur-lg" />
+      <div className="relative z-10 flex h-full w-full items-center justify-center rounded-2xl border border-primary/20 bg-background-surface font-heading text-3xl font-bold text-primary">
         {level}
       </div>
     </div>
@@ -55,21 +42,21 @@ function LevelBadge({ level }: { level: number }) {
 
 function HuntHistoryCard({ hunt }: { hunt: CompletedHunt }) {
   return (
-    <Card variant="interactive">
-      <div className="flex items-center gap-4 p-4">
-        <div className="bg-brand-primary/10 text-brand-primary flex h-12 w-12 items-center justify-center rounded-lg">
-          <Trophy className="h-6 w-6" />
+    <Card variant="interactive" className="p-4">
+      <div className="flex items-center gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/10 bg-primary/[0.06]">
+          <Trophy className="h-5 w-5 text-primary" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-brand-light truncate font-heading font-bold">
+          <p className="truncate font-heading font-bold text-text-heading">
             {hunt.huntTitle}
           </p>
-          <p className="text-brand-muted text-sm">
+          <p className="text-xs text-text-muted">
             {formatDate(hunt.completedAt)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-brand-primary font-heading font-bold">
+          <p className="font-heading font-bold text-primary">
             +{hunt.xpEarned} XP
           </p>
           <Badge variant="default" className="mt-1">
@@ -97,12 +84,11 @@ export default function ProfilePage() {
   }, []);
 
   if (!mounted) {
-    // Render a skeleton loader to avoid hydration mismatch and layout shift
     return (
       <div className="mx-auto max-w-2xl animate-pulse px-4 py-6">
-        <div className="bg-brand-surface mb-6 h-40 rounded-2xl" />
-        <div className="bg-brand-surface mb-6 h-32 rounded-2xl" />
-        <div className="bg-brand-surface h-64 rounded-2xl" />
+        <div className="mb-6 h-40 rounded-xl bg-background-surface" />
+        <div className="mb-6 h-32 rounded-xl bg-background-surface" />
+        <div className="h-64 rounded-xl bg-background-surface" />
       </div>
     );
   }
@@ -111,14 +97,14 @@ export default function ProfilePage() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-6">
         <EmptyState
-          icon={<Award className="text-brand-muted h-12 w-12" />}
+          icon={<Award className="h-12 w-12 text-text-muted" />}
           title="Profil non trouvé"
           description="Connectez-vous pour voir votre progression."
           action={
             isAuthenticated ? (
               <Button
                 variant="ghost"
-                className="text-brand-danger"
+                className="text-status-error"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4" />
@@ -139,23 +125,25 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
+      {/* Profile header */}
       <Card variant="glass" className="mb-6 overflow-hidden">
-        <div className="bg-brand-accent/5 relative h-28">
-          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5" />
+        <div className="relative h-24">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.08] via-transparent to-secondary/[0.06]" />
+          <div className="bg-dots absolute inset-0 opacity-30" />
         </div>
         <div className="relative px-6 pb-6">
-          <div className="-mt-16 flex items-end gap-4">
+          <div className="-mt-12 flex items-end gap-4">
             <Avatar
               name={player.username}
               src={player.avatarUrl}
               size="xl"
-              className="border-brand-surface border-4"
+              className="border-4 border-background-surface shadow-glow-sm"
             />
-            <div className="flex-1">
-              <h1 className="text-brand-light font-heading text-2xl font-bold">
+            <div className="flex-1 pb-1">
+              <h1 className="font-heading text-2xl font-bold text-text-heading">
                 {player.username}
               </h1>
-              <p className="text-brand-muted text-sm">{player.email}</p>
+              <p className="text-sm text-text-muted">{player.email}</p>
             </div>
             <Button variant="ghost" size="icon">
               <Settings className="h-5 w-5" />
@@ -164,21 +152,22 @@ export default function ProfilePage() {
         </div>
       </Card>
 
+      {/* XP Progress */}
       <Card variant="default" className="mb-6 p-6">
         <div className="flex items-center gap-6">
           <LevelBadge level={player.level} />
           <div className="flex-1">
-            <div className="mb-1 flex items-baseline justify-between">
-              <span className="text-brand-light font-heading font-bold">
+            <div className="mb-2 flex items-baseline justify-between">
+              <span className="font-heading font-bold text-text-heading">
                 Niveau {player.level}
               </span>
-              <span className="text-brand-muted text-sm">
+              <span className="text-xs text-text-muted">
                 {xpProgress.current} / {xpProgress.required} XP
               </span>
             </div>
-            <div className="bg-brand-dark h-4 w-full rounded-full">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-background-surface-alt">
               <div
-                className="bg-brand-primary h-full rounded-full transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-primary to-gold-500 transition-all duration-700 ease-spring"
                 style={{ width: `${xpProgress.percentage}%` }}
               />
             </div>
@@ -186,41 +175,52 @@ export default function ProfilePage() {
         </div>
       </Card>
 
-      <div className="mb-6 grid grid-cols-3 gap-4">
-        <Card variant="default" className="p-4 text-center">
-          <Trophy className="text-brand-primary mx-auto mb-2 h-6 w-6" />
-          <p className="text-brand-light font-heading text-2xl font-bold">
-            {player.huntsCompleted}
-          </p>
-          <p className="text-brand-muted text-xs uppercase">Terminées</p>
-        </Card>
-        <Card variant="default" className="p-4 text-center">
-          <Flame className="text-brand-primary mx-auto mb-2 h-6 w-6" />
-          <p className="text-brand-light font-heading text-2xl font-bold">
-            {player.totalXp}
-          </p>
-          <p className="text-brand-muted text-xs uppercase">XP Total</p>
-        </Card>
-        <Card variant="default" className="p-4 text-center">
-          <Target className="text-brand-primary mx-auto mb-2 h-6 w-6" />
-          <p className="text-brand-light font-heading text-2xl font-bold">
-            {player.level}
-          </p>
-          <p className="text-brand-muted text-xs uppercase">Niveau</p>
-        </Card>
+      {/* Stats */}
+      <div className="mb-6 grid grid-cols-3 gap-3">
+        {[
+          {
+            icon: Trophy,
+            value: player.huntsCompleted,
+            label: "Terminées",
+            color: "text-primary",
+          },
+          {
+            icon: Flame,
+            value: player.totalXp,
+            label: "XP Total",
+            color: "text-secondary",
+          },
+          {
+            icon: Target,
+            value: player.level,
+            label: "Niveau",
+            color: "text-status-success",
+          },
+        ].map((stat) => (
+          <Card key={stat.label} variant="default" className="p-4 text-center">
+            <stat.icon className={cn("mx-auto mb-2 h-5 w-5", stat.color)} />
+            <p className="font-heading text-2xl font-bold text-text-heading">
+              {stat.value}
+            </p>
+            <p className="text-[11px] tracking-wider text-text-muted">
+              {stat.label}
+            </p>
+          </Card>
+        ))}
       </div>
 
+      {/* Hunt history */}
       <div className="mb-6">
-        <h2 className="text-brand-light mb-4 font-heading text-xl font-bold">
+        <h2 className="mb-4 font-heading text-lg font-bold text-text-heading">
           Historique des Chasses
         </h2>
         {player.completedHunts.length === 0 ? (
           <Card
             variant="default"
-            className="border-2 border-dashed border-border p-8"
+            className="border-2 border-dashed border-black/[0.06] p-8"
           >
             <EmptyState
-              icon={<MapPin className="text-brand-muted h-8 w-8" />}
+              icon={<MapPin className="h-8 w-8 text-text-muted" />}
               title="Aucune chasse terminée"
               description="Partez à l'aventure pour compléter votre première chasse !"
               action={
@@ -239,14 +239,15 @@ export default function ProfilePage() {
             ))}
             {player.completedHunts.length > 3 && (
               <Button variant="secondary" className="w-full">
-                Voir tout l'historique <ChevronRight className="h-4 w-4" />
+                Voir tout l&apos;historique <ChevronRight className="h-4 w-4" />
               </Button>
             )}
           </div>
         )}
       </div>
 
-      <div className="space-y-3">
+      {/* Actions */}
+      <div className="space-y-2">
         <Link href="/ar">
           <Button variant="secondary" size="lg" className="w-full">
             <Camera className="h-5 w-5" />
@@ -256,7 +257,7 @@ export default function ProfilePage() {
         <Button
           variant="ghost"
           size="md"
-          className="text-brand-danger w-full"
+          className="w-full text-status-error hover:text-status-error"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />

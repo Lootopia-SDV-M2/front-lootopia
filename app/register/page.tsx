@@ -16,10 +16,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const strengthColors: Record<PasswordStrength, string> = {
-  weak: "bg-brand-danger",
-  fair: "bg-yellow-500",
-  good: "bg-brand-primary",
-  strong: "bg-brand-accent",
+  weak: "bg-status-error",
+  fair: "bg-status-warning",
+  good: "bg-primary",
+  strong: "bg-status-success",
 };
 
 const strengthLabels: Record<PasswordStrength, string> = {
@@ -104,26 +104,26 @@ function RegisterForm() {
           <Image
             src="/icons/favicon.png"
             alt="Lootopia"
-            width={64}
-            height={64}
-            className="mx-auto mb-4 rounded-2xl"
+            width={60}
+            height={60}
+            className="mx-auto mb-4 rounded-2xl shadow-glow"
           />
         </Link>
-        <h1 className="text-brand-light font-heading text-3xl font-bold">
+        <h1 className="font-heading text-3xl font-bold text-text-heading">
           Créer un Compte
         </h1>
-        <p className="text-brand-muted mt-2">
+        <p className="mt-2 text-text-muted">
           Rejoignez l&apos;aventure Lootopia !
         </p>
       </div>
 
-      <Card className="p-6 md:p-8">
+      <Card variant="glass" className="p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-5">
           {error && <Alert variant="error">{error}</Alert>}
 
           {/* Role selector */}
           <div>
-            <label className="text-brand-muted mb-3 block font-heading text-sm font-bold uppercase tracking-wider">
+            <label className="mb-3 block text-xs font-medium tracking-wider text-text-muted">
               Type de compte
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -131,22 +131,22 @@ function RegisterForm() {
                 type="button"
                 onClick={() => setSelectedRole("CHERCHEUR")}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-200",
+                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-300",
                   selectedRole === "CHERCHEUR"
-                    ? "border-brand-primary bg-brand-primary/20 text-brand-primary shadow-brand-primary/25 ring-brand-primary/30 scale-[1.02] shadow-lg ring-2"
-                    : "bg-brand-surface text-brand-muted hover:border-brand-primary/50 border-border"
+                    ? "border-primary/40 bg-primary/[0.08] text-primary shadow-glow-sm"
+                    : "border-black/[0.06] bg-background-surface text-text-muted hover:border-black/[0.08]"
                 )}
               >
                 {selectedRole === "CHERCHEUR" && (
-                  <div className="bg-brand-primary absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                  <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                     &#10003;
                   </div>
                 )}
-                <Search className="h-8 w-8" />
+                <Search className="h-7 w-7" />
                 <span className="font-heading text-sm font-bold">
                   Chercheur
                 </span>
-                <span className="text-xs opacity-70">
+                <span className="text-[11px] opacity-60">
                   Participer aux chasses
                 </span>
               </button>
@@ -154,32 +154,34 @@ function RegisterForm() {
                 type="button"
                 onClick={() => setSelectedRole("ORGANISATEUR")}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-200",
+                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-300",
                   selectedRole === "ORGANISATEUR"
-                    ? "border-brand-accent bg-brand-accent/20 text-brand-accent shadow-brand-accent/25 ring-brand-accent/30 scale-[1.02] shadow-lg ring-2"
-                    : "bg-brand-surface text-brand-muted hover:border-brand-accent/50 border-border"
+                    ? "border-secondary/40 bg-secondary/[0.08] text-secondary shadow-[0_0_20px_rgba(232,121,165,0.1)]"
+                    : "border-black/[0.06] bg-background-surface text-text-muted hover:border-black/[0.08]"
                 )}
               >
                 {selectedRole === "ORGANISATEUR" && (
-                  <div className="bg-brand-accent absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                  <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white">
                     &#10003;
                   </div>
                 )}
-                <Crown className="h-8 w-8" />
+                <Crown className="h-7 w-7" />
                 <span className="font-heading text-sm font-bold">
                   Organisateur
                 </span>
-                <span className="text-xs opacity-70">Créer des chasses</span>
+                <span className="text-[11px] opacity-60">
+                  Créer des chasses
+                </span>
               </button>
             </div>
           </div>
 
           <div>
-            <label className="text-brand-muted mb-2 block font-heading text-sm font-bold uppercase tracking-wider">
+            <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
               Nom d&apos;utilisateur
             </label>
             <div className="relative">
-              <User className="text-brand-muted absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2" />
+              <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <Input
                 type="text"
                 name="username"
@@ -187,22 +189,22 @@ function RegisterForm() {
                 value={formData.username}
                 onChange={handleChange}
                 error={!!validationErrors.username}
-                className="pl-12"
+                className="pl-11"
               />
             </div>
             {validationErrors.username && (
-              <p className="text-brand-danger mt-1 text-sm">
+              <p className="mt-1 text-xs text-status-error">
                 {validationErrors.username}
               </p>
             )}
           </div>
 
           <div>
-            <label className="text-brand-muted mb-2 block font-heading text-sm font-bold uppercase tracking-wider">
+            <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
               Email
             </label>
             <div className="relative">
-              <Mail className="text-brand-muted absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2" />
+              <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <Input
                 type="email"
                 name="email"
@@ -210,22 +212,22 @@ function RegisterForm() {
                 value={formData.email}
                 onChange={handleChange}
                 error={!!validationErrors.email}
-                className="pl-12"
+                className="pl-11"
               />
             </div>
             {validationErrors.email && (
-              <p className="text-brand-danger mt-1 text-sm">
+              <p className="mt-1 text-xs text-status-error">
                 {validationErrors.email}
               </p>
             )}
           </div>
 
           <div>
-            <label className="text-brand-muted mb-2 block font-heading text-sm font-bold uppercase tracking-wider">
+            <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
               Mot de passe
             </label>
             <div className="relative">
-              <Lock className="text-brand-muted absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2" />
+              <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <Input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -233,49 +235,47 @@ function RegisterForm() {
                 value={formData.password}
                 onChange={handleChange}
                 error={!!validationErrors.password}
-                className="pl-12 pr-12"
+                className="pl-11 pr-11"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-brand-muted hover:text-brand-light absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted transition-colors hover:text-text-heading"
               >
-                <Eye />
+                <Eye className="h-4 w-4" />
               </button>
             </div>
             {validationErrors.password && (
-              <p className="text-brand-danger mt-1 text-sm">
+              <p className="mt-1 text-xs text-status-error">
                 {validationErrors.password}
               </p>
             )}
             {formData.password && (
-              <div className="mt-2 space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="bg-brand-dark h-2 flex-1 overflow-hidden rounded-full">
-                    <div
-                      className={cn(
-                        "h-full transition-all duration-300",
-                        strengthColors[passwordStrength.strength]
-                      )}
-                      style={{
-                        width: `${(passwordStrength.score / 6) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-brand-light text-xs font-bold">
-                    {strengthLabels[passwordStrength.strength]}
-                  </span>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-background-surface-alt">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all duration-500",
+                      strengthColors[passwordStrength.strength]
+                    )}
+                    style={{
+                      width: `${(passwordStrength.score / 6) * 100}%`,
+                    }}
+                  />
                 </div>
+                <span className="text-[11px] font-medium text-text-muted">
+                  {strengthLabels[passwordStrength.strength]}
+                </span>
               </div>
             )}
           </div>
 
           <div>
-            <label className="text-brand-muted mb-2 block font-heading text-sm font-bold uppercase tracking-wider">
+            <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
               Confirmer le mot de passe
             </label>
             <div className="relative">
-              <Lock className="text-brand-muted absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2" />
+              <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
               <Input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
@@ -283,18 +283,18 @@ function RegisterForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 error={!!validationErrors.confirmPassword}
-                className="pl-12 pr-12"
+                className="pl-11 pr-11"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="text-brand-muted hover:text-brand-light absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted transition-colors hover:text-text-heading"
               >
-                <Eye />
+                <Eye className="h-4 w-4" />
               </button>
             </div>
             {validationErrors.confirmPassword && (
-              <p className="text-brand-danger mt-1 text-sm">
+              <p className="mt-1 text-xs text-status-error">
                 {validationErrors.confirmPassword}
               </p>
             )}
@@ -307,20 +307,20 @@ function RegisterForm() {
                 name="acceptTerms"
                 checked={formData.acceptTerms}
                 onChange={handleChange}
-                className="bg-brand-surface text-brand-primary focus:ring-brand-primary h-4 w-4 rounded border-border"
+                className="h-4 w-4 rounded border-black/[0.06] bg-background-surface-alt text-primary focus:ring-primary/30"
               />
-              <span className="text-brand-muted text-sm">
+              <span className="text-sm text-text-muted">
                 J&apos;accepte les{" "}
                 <Link
                   href="/terms"
-                  className="text-brand-accent hover:underline"
+                  className="text-primary/80 hover:text-primary hover:underline"
                 >
                   conditions d&apos;utilisation
                 </Link>
               </span>
             </label>
             {validationErrors.acceptTerms && (
-              <p className="text-brand-danger mt-1 text-sm">
+              <p className="mt-1 text-xs text-status-error">
                 {validationErrors.acceptTerms}
               </p>
             )}
@@ -339,11 +339,11 @@ function RegisterForm() {
         </form>
       </Card>
 
-      <p className="text-brand-muted mt-8 text-center text-sm">
+      <p className="mt-8 text-center text-sm text-text-muted">
         Déjà un compte ?{" "}
         <Link
           href="/login"
-          className="text-brand-accent font-bold hover:underline"
+          className="font-semibold text-primary transition-colors hover:text-primary-hover"
         >
           Se connecter
         </Link>

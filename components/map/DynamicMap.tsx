@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { LoadingScreen } from "@/components/shared";
+import type { Hunt } from "@/types";
 
 /**
  * Dynamically imported GameMap component.
@@ -15,4 +16,10 @@ const GameMap = dynamic(
   }
 );
 
-export default GameMap;
+export default function DynamicMap(props: {
+  className?: string;
+  hunts?: Hunt[];
+  isPartner?: boolean;
+}) {
+  return <GameMap {...props} />;
+}

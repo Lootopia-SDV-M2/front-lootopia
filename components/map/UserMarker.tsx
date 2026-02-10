@@ -17,10 +17,10 @@ const userIcon = L.divIcon({
     <div style="
       width: 24px;
       height: 24px;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      background: linear-gradient(135deg, #f5c542, #eab308);
       border-radius: 50%;
-      border: 4px solid white;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 12px rgba(200, 154, 14, 0.3);
       animation: pulse 2s infinite;
     "></div>
   `,
@@ -41,9 +41,9 @@ export function UserMarker({ position, accuracy }: UserMarkerProps) {
           center={position}
           radius={accuracy}
           pathOptions={{
-            color: "#3b82f6",
-            fillColor: "#3b82f6",
-            fillOpacity: 0.1,
+            color: "#f5c542",
+            fillColor: "#f5c542",
+            fillOpacity: 0.08,
             weight: 1,
           }}
         />
@@ -53,9 +53,9 @@ export function UserMarker({ position, accuracy }: UserMarkerProps) {
       <Marker position={position} icon={userIcon}>
         <Popup>
           <div className="p-1 text-center">
-            <p className="font-medium text-gray-900">Vous êtes ici</p>
+            <p className="font-medium text-text-heading">Vous êtes ici</p>
             {accuracy && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-text-muted">
                 Précision: ±{Math.round(accuracy)}m
               </p>
             )}

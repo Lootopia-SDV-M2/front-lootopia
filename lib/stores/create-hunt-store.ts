@@ -60,7 +60,7 @@ const initialDraft: HuntDraft = {
   title: "",
   description: "",
   difficulty: null,
-  duration: "",
+  duration: "01:00",
   reward: 100,
   maxParticipants: 10,
   theme: null,
