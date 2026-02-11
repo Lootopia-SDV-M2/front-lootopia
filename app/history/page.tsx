@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { History, Trophy, Play, Ban, Map } from "lucide-react";
 import { PageContainer, EmptyState } from "@/components/shared";
@@ -92,7 +92,12 @@ export default function HistoryPage() {
     getInProgressParticipations,
     getAbandonedParticipations,
     setActiveParticipation,
+    fetchMyParticipations,
   } = useParticipationStore();
+
+  useEffect(() => {
+    fetchMyParticipations();
+  }, [fetchMyParticipations]);
 
   const completedParticipations = getCompletedParticipations();
   const inProgressParticipations = getInProgressParticipations();

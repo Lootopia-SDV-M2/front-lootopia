@@ -125,20 +125,20 @@ export default function MapPage() {
   }, []);
 
   const handleAcceptHunt = useCallback(
-    (hunt: Hunt) => {
+    async (hunt: Hunt) => {
       if (!hunt.steps || hunt.steps.length === 0) {
         alert("Cette chasse n'a pas d'etapes configurees.");
         return;
       }
-      joinHunt(hunt);
+      await joinHunt(hunt);
       setSelectedHunt(null);
     },
     [joinHunt]
   );
 
-  const handleValidateStep = useCallback(() => {
+  const handleValidateStep = useCallback(async () => {
     if (!activeParticipation) return;
-    const isCompleted = validateStep(activeParticipation.id);
+    const isCompleted = await validateStep(activeParticipation.id);
     if (isCompleted) {
       setVictoryData({
         title: activeParticipation.huntTitle,
@@ -156,9 +156,9 @@ export default function MapPage() {
     }
   }, [activeParticipation, validateStep, completeHunt]);
 
-  const handleAbandon = useCallback(() => {
+  const handleAbandon = useCallback(async () => {
     if (!activeParticipation) return;
-    abandonHunt(activeParticipation.id);
+    await abandonHunt(activeParticipation.id);
   }, [activeParticipation, abandonHunt]);
 
   return (

@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Hunt, Participation } from "@/types";
+import type { Hunt, Participation, HuntStep, HuntDifficulty } from "@/types";
+import {
+  participationApi,
+  type ParticipationDTO,
+} from "@/lib/api/participation-api";
 
 const dummyStorage = {
   getItem: () => null,
@@ -8,19 +12,56 @@ const dummyStorage = {
   removeItem: () => {},
 };
 
+function mapDtoToParticipation(dto: ParticipationDTO): Participation {
+  return {
+    id: String(dto.id),
+    huntId: String(dto.huntId),
+    huntTitle: dto.huntTitle,
+    huntDifficulty:
+      (dto.huntDifficulty?.toLowerCase() as HuntDifficulty) || "medium",
+    huntDuration: dto.huntDuration,
+    huntReward: dto.huntReward,
+    creatorName: dto.creatorName,
+    currentStepIndex: dto.currentStepIndex,
+    status: dto.status as Participation["status"],
+    startedAt: dto.startedAt,
+    completedAt: dto.completedAt ?? undefined,
+    steps: dto.steps.map(
+      (s): HuntStep => ({
+        id: String(s.id),
+        order: s.orderIndex,
+        title: s.title,
+        description: s.description,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        radius: s.radius,
+        completed: false,
+        clues: [],
+      })
+    ),
+    rewards: dto.rewards?.map((r) => ({
+      id: String(r.id),
+      name: r.name,
+      imageUrl: r.imageUrl,
+      winnerId: r.winnerId ? String(r.winnerId) : null,
+    })),
+  };
+}
+
 interface ParticipationState {
   participations: Participation[];
   activeParticipationId: string | null;
 
-  joinHunt: (hunt: Hunt) => void;
-  validateStep: (participationId: string) => boolean;
-  abandonHunt: (participationId: string) => void;
+  joinHunt: (hunt: Hunt) => Promise<void>;
+  validateStep: (participationId: string) => Promise<boolean>;
+  abandonHunt: (participationId: string) => Promise<void>;
   setActiveParticipation: (id: string | null) => void;
   getActiveParticipation: () => Participation | null;
   getParticipationByHuntId: (huntId: string) => Participation | undefined;
   getCompletedParticipations: () => Participation[];
   getInProgressParticipations: () => Participation[];
   getAbandonedParticipations: () => Participation[];
+  fetchMyParticipations: () => Promise<void>;
 }
 
 export const useParticipationStore = create<ParticipationState>()(
@@ -29,7 +70,8 @@ export const useParticipationStore = create<ParticipationState>()(
       participations: [],
       activeParticipationId: null,
 
-      joinHunt: (hunt: Hunt) => {
+      joinHunt: async (hunt: Hunt) => {
+        // Check local state first
         const existing = get().participations.find(
           (p) => p.huntId === hunt.id && p.status === "EN_COURS"
         );
@@ -38,28 +80,39 @@ export const useParticipationStore = create<ParticipationState>()(
           return;
         }
 
-        const participation: Participation = {
-          id: `participation-${Date.now()}`,
-          huntId: hunt.id,
-          huntTitle: hunt.title,
-          huntDifficulty: hunt.difficulty,
-          huntDuration: hunt.duration,
-          huntReward: hunt.reward,
-          creatorName: "",
-          currentStepIndex: 0,
-          status: "EN_COURS",
-          startedAt: new Date().toISOString(),
-          steps: hunt.steps ?? [],
-          rewards: hunt.rewards,
-        };
+        try {
+          const dto = await participationApi.joinHunt(hunt.id);
+          const participation = mapDtoToParticipation(dto);
 
-        set((state) => ({
-          participations: [participation, ...state.participations],
-          activeParticipationId: participation.id,
-        }));
+          set((state) => ({
+            participations: [participation, ...state.participations],
+            activeParticipationId: participation.id,
+          }));
+        } catch {
+          // Fallback to local-only participation if backend is unreachable
+          const participation: Participation = {
+            id: `local-${Date.now()}`,
+            huntId: hunt.id,
+            huntTitle: hunt.title,
+            huntDifficulty: hunt.difficulty,
+            huntDuration: hunt.duration,
+            huntReward: hunt.reward,
+            creatorName: "",
+            currentStepIndex: 0,
+            status: "EN_COURS",
+            startedAt: new Date().toISOString(),
+            steps: hunt.steps ?? [],
+            rewards: hunt.rewards,
+          };
+
+          set((state) => ({
+            participations: [participation, ...state.participations],
+            activeParticipationId: participation.id,
+          }));
+        }
       },
 
-      validateStep: (participationId: string) => {
+      validateStep: async (participationId: string) => {
         const { participations } = get();
         const participation = participations.find(
           (p) => p.id === participationId
@@ -69,28 +122,54 @@ export const useParticipationStore = create<ParticipationState>()(
         const nextIndex = participation.currentStepIndex + 1;
         const isLastStep = nextIndex >= participation.steps.length;
 
-        set((state) => ({
-          participations: state.participations.map((p) =>
-            p.id === participationId
-              ? {
-                  ...p,
-                  currentStepIndex: isLastStep ? p.currentStepIndex : nextIndex,
-                  status: isLastStep ? "TERMINE" : "EN_COURS",
-                  completedAt: isLastStep
-                    ? new Date().toISOString()
-                    : undefined,
-                }
-              : p
-          ),
-          activeParticipationId: isLastStep
-            ? null
-            : state.activeParticipationId,
-        }));
+        try {
+          const dto = await participationApi.validateStep(participationId);
+          const updated = mapDtoToParticipation(dto);
 
-        return isLastStep;
+          set((state) => ({
+            participations: state.participations.map((p) =>
+              p.id === participationId ? updated : p
+            ),
+            activeParticipationId:
+              updated.status === "TERMINE" ? null : state.activeParticipationId,
+          }));
+
+          return updated.status === "TERMINE";
+        } catch {
+          // Fallback to local update
+          set((state) => ({
+            participations: state.participations.map((p) =>
+              p.id === participationId
+                ? {
+                    ...p,
+                    currentStepIndex: isLastStep
+                      ? p.currentStepIndex
+                      : nextIndex,
+                    status: isLastStep
+                      ? ("TERMINE" as const)
+                      : ("EN_COURS" as const),
+                    completedAt: isLastStep
+                      ? new Date().toISOString()
+                      : undefined,
+                  }
+                : p
+            ),
+            activeParticipationId: isLastStep
+              ? null
+              : state.activeParticipationId,
+          }));
+
+          return isLastStep;
+        }
       },
 
-      abandonHunt: (participationId: string) => {
+      abandonHunt: async (participationId: string) => {
+        try {
+          await participationApi.abandonHunt(participationId);
+        } catch {
+          // Continue with local update even if backend fails
+        }
+
         set((state) => ({
           participations: state.participations.map((p) =>
             p.id === participationId
@@ -132,6 +211,16 @@ export const useParticipationStore = create<ParticipationState>()(
 
       getAbandonedParticipations: () => {
         return get().participations.filter((p) => p.status === "ABANDONNE");
+      },
+
+      fetchMyParticipations: async () => {
+        try {
+          const dtos = await participationApi.getMyParticipations();
+          const participations = dtos.map(mapDtoToParticipation);
+          set({ participations });
+        } catch {
+          // Keep existing local state if API fails
+        }
       },
     }),
     {

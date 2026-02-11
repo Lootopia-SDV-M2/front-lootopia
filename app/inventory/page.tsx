@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Package, Map } from "lucide-react";
 import { PageContainer, EmptyState } from "@/components/shared";
 import { Button } from "@/components/ui";
+import { getRarityColor, getRarityLabel } from "@/lib/data/mock-artefacts";
 import {
-  mockArtefacts,
-  getRarityColor,
-  getRarityLabel,
-} from "@/lib/data/mock-artefacts";
+  participationApi,
+  type ArtefactDTO,
+} from "@/lib/api/participation-api";
 import type { ArtefactRarity, Artefact } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -21,10 +21,20 @@ const rarityFilters: { value: ArtefactRarity | "all"; label: string }[] = [
   { value: "legendary", label: "Legendaire" },
 ];
 
+function mapDtoToArtefact(dto: ArtefactDTO): Artefact {
+  return {
+    id: String(dto.id),
+    name: dto.name,
+    imageUrl: dto.imageUrl,
+    rarity: (dto.rarity as ArtefactRarity) || "common",
+    huntTitle: "",
+    obtainedAt: dto.obtainedAt,
+  };
+}
+
 function ArtefactCard({ artefact }: { artefact: Artefact }) {
   return (
     <div className="group rounded-2xl border border-black/[0.06] bg-background-surface/60 p-4 transition-all duration-300 hover:border-primary/15 hover:shadow-glow-sm">
-      {/* Image placeholder */}
       <div className="mb-3 flex h-32 items-center justify-center rounded-xl bg-background-surface-alt">
         {artefact.imageUrl ? (
           <img
@@ -37,7 +47,6 @@ function ArtefactCard({ artefact }: { artefact: Artefact }) {
         )}
       </div>
 
-      {/* Info */}
       <h3 className="mb-1 text-sm font-semibold text-text-heading">
         {artefact.name}
       </h3>
@@ -51,7 +60,9 @@ function ArtefactCard({ artefact }: { artefact: Artefact }) {
         {getRarityLabel(artefact.rarity)}
       </span>
 
-      <p className="text-xs text-text-muted">{artefact.huntTitle}</p>
+      {artefact.huntTitle && (
+        <p className="text-xs text-text-muted">{artefact.huntTitle}</p>
+      )}
       <p className="mt-1 text-xs text-text-muted">
         {new Date(artefact.obtainedAt).toLocaleDateString("fr-FR")}
       </p>
@@ -61,11 +72,25 @@ function ArtefactCard({ artefact }: { artefact: Artefact }) {
 
 export default function InventoryPage() {
   const [filter, setFilter] = useState<ArtefactRarity | "all">("all");
+  const [artefacts, setArtefacts] = useState<Artefact[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArtefacts = async () => {
+      try {
+        const dtos = await participationApi.getMyArtefacts();
+        setArtefacts(dtos.map(mapDtoToArtefact));
+      } catch {
+        setArtefacts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArtefacts();
+  }, []);
 
   const filteredArtefacts =
-    filter === "all"
-      ? mockArtefacts
-      : mockArtefacts.filter((a) => a.rarity === filter);
+    filter === "all" ? artefacts : artefacts.filter((a) => a.rarity === filter);
 
   return (
     <div className="min-h-screen pb-20 pt-20 md:pb-8">
@@ -92,7 +117,11 @@ export default function InventoryPage() {
         </div>
 
         {/* Grid */}
-        {filteredArtefacts.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        ) : filteredArtefacts.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filteredArtefacts.map((artefact) => (
               <ArtefactCard key={artefact.id} artefact={artefact} />
