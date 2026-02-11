@@ -38,6 +38,14 @@ const DEFAULT_ZOOM = 13;
 function MapCenterController({ center }: { center: [number, number] | null }) {
   const map = useMap();
 
+  // Fix missing tiles on initial render
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [map]);
+
   useEffect(() => {
     if (center) {
       map.flyTo(center, 14, { duration: 1.5 });
