@@ -1,4 +1,8 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+
+if (!API_BASE_URL && typeof window !== "undefined") {
+  console.error("[Lootopia] NEXT_PUBLIC_API_URL is not defined in .env");
+}
 
 function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;

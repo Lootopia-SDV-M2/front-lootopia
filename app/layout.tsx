@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Fira_Code } from "next/font/google";
-import { Header, BottomNav } from "@/components/layout";
+import { Header, BottomNav, HealthCheck } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -53,6 +53,9 @@ export default function RootLayout({
       className={cn(inter.variable, outfit.variable, firaCode.variable)}
     >
       <body className="noise-overlay relative min-h-screen bg-background font-sans text-text-body antialiased selection:bg-primary/20 selection:text-primary">
+        {/* Backend health check */}
+        <HealthCheck />
+
         {/* Header */}
         <Header />
 
