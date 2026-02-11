@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type NavigationTab = "home" | "map" | "profile" | "create";
+type NavigationTab = "home" | "map" | "profile" | "create" | "hunts";
 
 interface AppState {
   /** Currently active navigation tab */

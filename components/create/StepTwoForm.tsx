@@ -3,7 +3,7 @@
 import { useCreateHuntStore } from "@/lib/stores";
 import { Input, Button, Card } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { MapPin, Trash2, ChevronLeft, Check } from "lucide-react";
+import { MapPin, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { HuntStepFormData } from "@/lib/validations";
 
 interface StepTwoFormProps {
@@ -32,19 +32,19 @@ function StepEditor({
     <Card
       variant="default"
       className={cn(
-        "overflow-hidden border transition-all",
-        isExpanded ? "border-brand-primary" : "border-border"
+        "overflow-hidden border transition-all duration-300",
+        isExpanded ? "border-primary/30 shadow-glow-sm" : "border-black/[0.06]"
       )}
     >
       <div
         className="flex cursor-pointer items-center gap-3 p-4"
         onClick={onToggle}
       >
-        <div className="bg-brand-primary text-brand-dark flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-gold-600 text-sm font-bold text-primary-foreground">
           {step.order}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-brand-light truncate font-heading font-bold">
+          <p className="truncate font-heading font-bold text-text-heading">
             {step.title || `Étape ${step.order}`}
           </p>
         </div>
@@ -54,18 +54,18 @@ function StepEditor({
             e.stopPropagation();
             onDelete();
           }}
-          className="text-brand-muted hover:bg-brand-danger/10 hover:text-brand-danger rounded-lg p-2"
+          className="rounded-lg p-2 text-text-muted hover:bg-status-error/10 hover:text-status-error"
         >
           <Trash2 className="h-4 w-4" />
         </button>
       </div>
 
       {isExpanded && (
-        <div className="border-t border-border p-4">
+        <div className="border-t border-black/[0.06] p-4">
           <div className="space-y-4">
             <div>
-              <label className="text-brand-light mb-2 block text-sm font-medium">
-                Titre de l'étape
+              <label className="mb-2 block text-xs font-medium tracking-wider text-text-muted">
+                Titre de l&apos;étape
               </label>
               <Input
                 type="text"
@@ -76,7 +76,7 @@ function StepEditor({
             </div>
 
             <div>
-              <label className="text-brand-light mb-2 block text-sm font-medium">
+              <label className="mb-2 block text-xs font-medium tracking-wider text-text-muted">
                 Description / Indice
               </label>
               <textarea
@@ -84,12 +84,12 @@ function StepEditor({
                 value={step.description}
                 onChange={(e) => onUpdate({ description: e.target.value })}
                 rows={2}
-                className="bg-brand-dark text-brand-light focus:ring-brand-accent w-full rounded-xl border-none p-3 text-sm focus:ring-2"
+                className="w-full rounded-xl border border-black/[0.06] bg-background-surface-alt p-3 text-sm text-text-heading placeholder:text-text-muted focus:border-primary/30 focus:outline-none focus:ring-1 focus:ring-primary/20"
               />
             </div>
 
             <div>
-              <label className="text-brand-light mb-2 block text-sm font-medium">
+              <label className="mb-2 block text-xs font-medium tracking-wider text-text-muted">
                 Rayon de validation (en mètres)
               </label>
               <Input
@@ -115,15 +115,15 @@ export function StepTwoForm({
   expandedStepId,
   setExpandedStepId,
 }: StepTwoFormProps) {
-  const { draft, updateStep, removeStep, isSubmitting } = useCreateHuntStore();
+  const { draft, updateStep, removeStep } = useCreateHuntStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (draft.steps.length === 0) return;
+    if (draft.steps.length < 2) return;
     onSubmit();
   };
 
-  const isFormValid = draft.steps.length >= 1;
+  const isFormValid = draft.steps.length >= 2;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -145,11 +145,11 @@ export function StepTwoForm({
       ) : (
         <Card
           variant="default"
-          className="border-2 border-dashed border-border p-8 text-center"
+          className="border-2 border-dashed border-black/[0.06] p-8 text-center"
         >
-          <MapPin className="text-brand-muted mx-auto mb-3 h-12 w-12" />
-          <p className="text-brand-light font-bold">Aucune étape ajoutée</p>
-          <p className="text-brand-muted mt-1 text-sm">
+          <MapPin className="mx-auto mb-3 h-12 w-12 text-text-muted" />
+          <p className="font-bold text-text-heading">Aucune étape ajoutée</p>
+          <p className="mt-1 text-sm text-text-muted">
             Cliquez sur la carte pour ajouter la première étape.
           </p>
         </Card>
@@ -165,11 +165,10 @@ export function StepTwoForm({
           type="submit"
           variant="primary"
           size="lg"
-          disabled={!isFormValid || isSubmitting}
-          isLoading={isSubmitting}
+          disabled={!isFormValid}
         >
-          <Check className="h-4 w-4" />
-          Créer la chasse
+          Continuer
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </form>

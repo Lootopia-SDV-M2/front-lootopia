@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -9,36 +9,34 @@ import {
   Check,
   MapPin,
   FileText,
+  Gift,
   Sparkles,
   Rocket,
 } from "lucide-react";
 import { Button, Card } from "@/components/ui";
-import { StepOneForm, StepTwoForm } from "@/components/create";
+import { StepOneForm, StepTwoForm, StepThreeForm } from "@/components/create";
 import { useCreateHuntStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
 
-// Dynamic import for CreatorMap (Leaflet requires client-side only)
 const CreatorMap = dynamic(
   () => import("@/components/create/CreatorMap").then((mod) => mod.CreatorMap),
   {
     ssr: false,
     loading: () => (
-      <div className="bg-brand-surface h-80 animate-pulse rounded-2xl" />
+      <div className="h-80 animate-pulse rounded-xl bg-background-surface" />
     ),
   }
 );
 
-/**
- * Step indicator component
- */
 function StepIndicator({ currentStep }: { currentStep: number }) {
   const steps = [
-    { number: 1, label: "Informations", icon: FileText },
+    { number: 1, label: "Infos", icon: FileText },
     { number: 2, label: "Parcours", icon: MapPin },
+    { number: 3, label: "Cadeaux", icon: Gift },
   ];
 
   return (
-    <div className="mb-12">
+    <div className="mb-10">
       <div className="flex items-center justify-center gap-4">
         {steps.map((step, index) => {
           const Icon = step.icon;
@@ -50,24 +48,24 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
               <div className="flex flex-col items-center text-center">
                 <div
                   className={cn(
-                    "flex h-16 w-16 items-center justify-center rounded-2xl border-2 transition-all duration-300",
+                    "flex h-14 w-14 items-center justify-center rounded-2xl border-2 transition-all duration-500",
                     isCompleted
-                      ? "border-brand-success bg-brand-success/10 text-brand-success"
+                      ? "border-status-success/30 bg-status-success/10 text-status-success"
                       : isCurrent
-                        ? "border-brand-primary text-brand-primary shadow-glow-primary"
-                        : "text-brand-muted border-border"
+                        ? "border-primary/30 bg-primary/[0.06] text-primary shadow-glow-sm"
+                        : "border-black/[0.06] text-text-muted"
                   )}
                 >
                   {isCompleted ? (
-                    <Check className="h-7 w-7" />
+                    <Check className="h-6 w-6" />
                   ) : (
-                    <Icon className="h-7 w-7" />
+                    <Icon className="h-6 w-6" />
                   )}
                 </div>
                 <span
                   className={cn(
-                    "mt-3 font-heading text-sm font-bold uppercase tracking-wider",
-                    isCurrent ? "text-brand-light" : "text-brand-muted"
+                    "mt-2 text-xs font-medium tracking-wider",
+                    isCurrent ? "text-text-heading" : "text-text-muted"
                   )}
                 >
                   {step.label}
@@ -77,8 +75,8 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
               {index < steps.length - 1 && (
                 <div
                   className={cn(
-                    "mx-4 h-1 w-16 rounded-full transition-all",
-                    isCompleted ? "bg-brand-success" : "bg-border"
+                    "mx-3 h-0.5 w-12 rounded-full transition-all duration-500",
+                    isCompleted ? "bg-status-success/40" : "bg-black/[0.03]"
                   )}
                 />
               )}
@@ -90,21 +88,18 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
   );
 }
 
-/**
- * Success screen shown after hunt creation
- */
 function SuccessScreen({ onReset }: { onReset: () => void }) {
   const router = useRouter();
 
   return (
     <div className="mx-auto max-w-md py-12 text-center">
-      <div className="bg-brand-success mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full shadow-lg">
-        <Sparkles className="h-12 w-12 text-white" />
+      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-status-success/10 shadow-[0_0_30px_rgba(52,211,153,0.15)]">
+        <Sparkles className="h-10 w-10 text-status-success" />
       </div>
-      <h2 className="text-brand-light font-heading text-3xl font-bold">
+      <h2 className="font-heading text-3xl font-bold text-text-heading">
         Chasse Créée !
       </h2>
-      <p className="text-brand-muted mt-3">
+      <p className="mt-3 text-text-muted">
         Votre chasse au trésor est maintenant disponible pour les joueurs.
       </p>
       <div className="mt-8 flex flex-col gap-3">
@@ -172,23 +167,23 @@ export default function CreateHuntPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-brand-light font-heading text-2xl font-bold">
+          <h1 className="font-heading text-2xl font-bold text-text-heading">
             Créer une Chasse
           </h1>
-          <p className="text-brand-muted text-sm">Espace Partenaire</p>
+          <p className="text-sm text-text-muted">Espace Partenaire</p>
         </div>
       </div>
 
       <Card variant="glass" className="mb-8 p-4">
         <div className="flex items-center gap-4">
-          <div className="bg-brand-accent/10 text-brand-accent flex h-12 w-12 items-center justify-center rounded-lg">
-            <Rocket className="h-6 w-6" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-secondary/15 bg-secondary/[0.06]">
+            <Rocket className="h-5 w-5 text-secondary" />
           </div>
           <div>
-            <p className="text-brand-light font-heading font-bold">
+            <p className="font-heading text-sm font-bold text-text-heading">
               Mode Partenaire
             </p>
-            <p className="text-brand-muted text-sm">
+            <p className="text-xs text-text-muted">
               Interface simplifiée pour la création de parcours
             </p>
           </div>
@@ -203,7 +198,7 @@ export default function CreateHuntPage() {
         {currentStep === 2 && (
           <div className="space-y-6">
             <div>
-              <label className="text-brand-light mb-3 block font-heading text-lg font-bold">
+              <label className="mb-3 block font-heading text-lg font-bold text-text-heading">
                 Placez vos étapes
               </label>
               <CreatorMap
@@ -222,17 +217,24 @@ export default function CreateHuntPage() {
 
             <StepTwoForm
               onBack={prevStep}
-              onSubmit={handleSubmit}
+              onSubmit={nextStep}
               expandedStepId={expandedStepId}
               setExpandedStepId={setExpandedStepId}
             />
           </div>
         )}
+
+        {currentStep === 3 && (
+          <StepThreeForm onBack={prevStep} onSubmit={handleSubmit} />
+        )}
       </Card>
 
-      <p className="text-brand-muted mt-6 text-center text-sm">
+      <p className="mt-6 text-center text-sm text-text-muted">
         Besoin d&apos;aide ?{" "}
-        <a href="#" className="text-brand-accent hover:underline">
+        <a
+          href="#"
+          className="text-primary/70 hover:text-primary hover:underline"
+        >
           Consultez notre guide
         </a>
       </p>

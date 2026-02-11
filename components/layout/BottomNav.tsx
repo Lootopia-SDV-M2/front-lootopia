@@ -1,27 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Map, User, Rocket } from "lucide-react";
+import { Home, Map, User, Rocket, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/lib/stores";
+import { useAppStore, useAuthStore } from "@/lib/stores";
 
-/**
- * Game-themed mobile bottom navigation bar.
- * Full-width, docked, with glowing active-state icons.
- */
 export function BottomNav() {
   const { activeTab, setActiveTab } = useAppStore();
+  const user = useAuthStore((s) => s.user);
+
+  const isPartner = user?.role === "partner";
 
   const navItems = [
     { id: "home" as const, href: "/", icon: Home, label: "Accueil" },
     { id: "map" as const, href: "/map", icon: Map, label: "Carte" },
-    { id: "create" as const, href: "/create", icon: Rocket, label: "Créer" },
+    isPartner
+      ? { id: "create" as const, href: "/create", icon: Rocket, label: "Créer" }
+      : {
+          id: "hunts" as const,
+          href: "/hunts",
+          icon: Compass,
+          label: "Chasses",
+        },
     { id: "profile" as const, href: "/profile", icon: User, label: "Profil" },
   ];
 
   return (
-    <nav className="bg-brand-surface fixed bottom-0 left-0 right-0 z-50 h-20 border-t border-border md:hidden">
-      <div className="grid h-full grid-cols-4">
+    <nav className="safe-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-black/[0.04] bg-background/90 backdrop-blur-2xl md:hidden">
+      <div className="grid h-16 grid-cols-4">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -32,30 +38,26 @@ export function BottomNav() {
               href={item.href}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                "relative flex flex-col items-center justify-center gap-1 transition-all duration-300",
-                !isActive && "text-brand-muted hover:text-brand-light"
+                "relative flex flex-col items-center justify-center gap-0.5 transition-all duration-300",
+                !isActive && "text-text-muted"
               )}
             >
-              {/* Active indicator glow */}
               {isActive && (
-                <div className="from-brand-primary/20 via-brand-primary/5 absolute inset-x-0 top-0 h-full bg-gradient-to-t to-transparent" />
-              )}
-              {/* Top line indicator */}
-              {isActive && (
-                <div className="bg-brand-primary absolute top-0 h-1 w-12 rounded-b-full" />
+                <div className="absolute top-0 h-0.5 w-8 rounded-b-full bg-gradient-to-r from-primary to-gold-500" />
               )}
 
               <Icon
                 className={cn(
-                  "h-6 w-6 transition-colors duration-200",
-                  isActive && "text-brand-primary"
+                  "h-5 w-5 transition-all duration-300",
+                  isActive &&
+                    "text-primary drop-shadow-[0_0_6px_rgba(200,154,14,0.3)]"
                 )}
               />
 
               <span
                 className={cn(
-                  "font-heading text-xs font-bold uppercase tracking-wider transition-colors duration-200",
-                  isActive && "text-brand-primary"
+                  "text-[10px] font-medium tracking-wider transition-colors duration-300",
+                  isActive && "text-primary"
                 )}
               >
                 {item.label}

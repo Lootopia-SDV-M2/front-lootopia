@@ -42,6 +42,13 @@ export interface HuntStep {
   clues: HuntClue[];
 }
 
+export interface Reward {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  winnerId: string | null;
+}
+
 export interface Hunt {
   id: string;
   title: string;
@@ -58,6 +65,7 @@ export interface Hunt {
   startsAt?: string;
   imageUrl?: string;
   steps?: HuntStep[];
+  rewards?: Reward[];
 }
 
 export interface HuntMarkerProps {

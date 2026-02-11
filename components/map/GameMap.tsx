@@ -26,6 +26,8 @@ L.Icon.Default.mergeOptions({
 interface GameMapProps {
   onHuntSelect?: (hunt: Hunt) => void;
   className?: string;
+  hunts?: Hunt[];
+  isPartner?: boolean;
 }
 
 // Default center (Paris)
@@ -51,16 +53,34 @@ function MapCenterController({ center }: { center: [number, number] | null }) {
  * Main game map component displaying hunts and user location.
  * Uses Leaflet with OpenStreetMap tiles.
  */
-export function GameMap({ onHuntSelect, className }: GameMapProps) {
-  const { position, isLoading, error, requestGeolocation } =
-    useGeolocationStore();
+export function GameMap({
+  onHuntSelect,
+  className,
+  hunts,
+  isPartner,
+}: GameMapProps) {
+  const {
+    position,
+    isLoading,
+    error,
+    watchPosition,
+    clearWatch,
+    requestGeolocation,
+  } = useGeolocationStore();
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [selectedHunt, setSelectedHunt] = useState<Hunt | null>(null);
 
-  // Request geolocation on mount
+  const displayedHunts = hunts ?? mockHunts;
+
+  // Use watchPosition for continuous GPS tracking
   useEffect(() => {
-    requestGeolocation();
-  }, [requestGeolocation]);
+    const watchId = watchPosition();
+    return () => {
+      if (watchId !== null) {
+        clearWatch(watchId);
+      }
+    };
+  }, [watchPosition, clearWatch]);
 
   // Update map center when position changes
   useEffect(() => {
@@ -110,7 +130,7 @@ export function GameMap({ onHuntSelect, className }: GameMapProps) {
         )}
 
         {/* Hunt markers */}
-        {mockHunts.map((hunt) => (
+        {displayedHunts.map((hunt) => (
           <HuntMarker key={hunt.id} hunt={hunt} onClick={handleHuntClick} />
         ))}
       </MapContainer>
@@ -121,15 +141,17 @@ export function GameMap({ onHuntSelect, className }: GameMapProps) {
         isLoading={isLoading}
         error={error}
         hasPosition={!!position}
+        huntCount={displayedHunts.length}
+        label={isPartner ? "Mes chasses" : "Chasses disponibles"}
       />
 
       {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/20 backdrop-blur-sm">
-          <div className="rounded-xl bg-white px-6 py-4 shadow-xl dark:bg-gray-800">
+        <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-background/40 backdrop-blur-sm">
+          <div className="rounded-2xl border border-black/[0.06] bg-background-surface/90 px-6 py-4 shadow-glass backdrop-blur-xl">
             <div className="flex items-center gap-3">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-              <span className="text-sm font-medium">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <span className="text-sm font-medium text-text-heading">
                 Localisation en cours...
               </span>
             </div>

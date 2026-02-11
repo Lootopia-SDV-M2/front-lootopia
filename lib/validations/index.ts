@@ -2,11 +2,13 @@
 export {
   huntInfoSchema,
   huntStepSchema,
+  rewardSchema,
   createHuntSchema,
   huntThemes,
   difficultyOptions,
   type HuntInfoFormData,
   type HuntStepFormData,
+  type RewardFormData,
   type CreateHuntFormData,
 } from "./hunt-schemas";
 

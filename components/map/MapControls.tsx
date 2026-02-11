@@ -1,6 +1,6 @@
 "use client";
 
-import { Locate, ZoomIn, ZoomOut, Layers } from "lucide-react";
+import { Locate } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MapControlsProps {
@@ -8,6 +8,8 @@ interface MapControlsProps {
   isLoading?: boolean;
   error?: string | null;
   hasPosition?: boolean;
+  huntCount?: number;
+  label?: string;
 }
 
 /**
@@ -19,6 +21,8 @@ export function MapControls({
   isLoading,
   error,
   hasPosition,
+  huntCount,
+  label = "Chasses disponibles",
 }: MapControlsProps) {
   return (
     <>
@@ -28,18 +32,16 @@ export function MapControls({
           onClick={onCenterUser}
           disabled={isLoading}
           className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-200 hover:bg-gray-50 active:scale-95 dark:bg-gray-800 dark:hover:bg-gray-700",
+            "flex h-12 w-12 items-center justify-center rounded-2xl border border-black/[0.06] bg-background-surface/90 shadow-glass backdrop-blur-xl transition-all duration-300 hover:border-primary/20 hover:shadow-glow-sm active:scale-95",
             isLoading && "cursor-not-allowed opacity-50",
-            hasPosition && "ring-2 ring-blue-500 ring-offset-2"
+            hasPosition && "border-primary/30 shadow-glow-sm"
           )}
           title="Centrer sur ma position"
         >
           <Locate
             className={cn(
               "h-5 w-5",
-              hasPosition
-                ? "text-blue-500"
-                : "text-gray-600 dark:text-gray-300",
+              hasPosition ? "text-primary" : "text-text-muted",
               isLoading && "animate-pulse"
             )}
           />
@@ -49,21 +51,19 @@ export function MapControls({
       {/* Error message */}
       {error && (
         <div className="absolute bottom-24 left-4 right-4 z-[1000] md:left-auto md:right-4 md:max-w-xs">
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 shadow-lg dark:border-red-800 dark:bg-red-900/50">
-            <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
+          <div className="rounded-xl border border-status-error/20 bg-status-error/10 px-4 py-3 shadow-glass backdrop-blur-xl">
+            <p className="text-sm text-status-error">{error}</p>
           </div>
         </div>
       )}
 
       {/* Hunt count badge */}
       <div className="absolute left-4 top-4 z-[1000]">
-        <div className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 shadow-lg backdrop-blur-sm dark:bg-gray-800/90">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-xs font-bold text-white">
-            6
+        <div className="flex items-center gap-2 rounded-2xl border border-black/[0.06] bg-background-surface/90 px-4 py-2.5 shadow-glass backdrop-blur-xl">
+          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-gold-600 text-xs font-bold text-primary-foreground">
+            {huntCount ?? 0}
           </span>
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-            Chasses disponibles
-          </span>
+          <span className="text-sm font-medium text-text-heading">{label}</span>
         </div>
       </div>
     </>

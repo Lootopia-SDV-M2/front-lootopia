@@ -1,5 +1,6 @@
-import { Inter, Outfit, Fira_Code } from "next/font/google"; // Outfit for modern simple headings
-import { Header, BottomNav } from "@/components/layout";
+import type { Metadata, Viewport } from "next";
+import { Inter, Outfit, Fira_Code } from "next/font/google";
+import { Header, BottomNav, HealthCheck } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#030303", // Modern Black
+  themeColor: "#faf8f4",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -49,14 +50,17 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={cn("dark", inter.variable, outfit.variable, firaCode.variable)}
+      className={cn(inter.variable, outfit.variable, firaCode.variable)}
     >
-      <body className="min-h-screen bg-background font-sans text-text-body antialiased selection:bg-white/20 selection:text-white">
-        {/* PillNav Header */}
+      <body className="noise-overlay relative min-h-screen bg-background font-sans text-text-body antialiased selection:bg-primary/20 selection:text-primary">
+        {/* Backend health check */}
+        <HealthCheck />
+
+        {/* Header */}
         <Header />
 
         {/* Main Content */}
-        <main className="pb-24 pt-20 md:pb-8 md:pt-24">{children}</main>
+        <main className="pb-20 pt-16 md:pb-8 md:pt-16">{children}</main>
 
         {/* Mobile Bottom Navigation */}
         <BottomNav />

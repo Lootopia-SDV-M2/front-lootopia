@@ -6,7 +6,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 /**
- * A game-themed badge component.
+ * A refined badge with subtle glass effect.
  */
 export function Badge({
   className,
@@ -14,17 +14,20 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variants = {
-    default: "bg-background-surface-alt text-text-muted",
-    primary: "bg-primary text-primary-foreground",
-    success: "bg-status-success text-white",
-    warning: "bg-status-warning text-primary",
-    destructive: "bg-status-error text-white",
+    default: "bg-black/[0.03] text-text-muted border border-black/[0.06]",
+    primary: "bg-primary/10 text-primary border border-primary/20",
+    success:
+      "bg-status-success/10 text-status-success border border-status-success/20",
+    warning:
+      "bg-status-warning/10 text-status-warning border border-status-warning/20",
+    destructive:
+      "bg-status-error/10 text-status-error border border-status-error/20",
   };
 
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium tracking-wide",
+        "inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-medium tracking-wide",
         variants[variant],
         className
       )}

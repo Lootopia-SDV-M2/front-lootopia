@@ -24,6 +24,19 @@ export const huntStepSchema = z.object({
 export type HuntStepFormData = z.infer<typeof huntStepSchema>;
 
 /**
+ * Schema for hunt reward creation
+ */
+export const rewardSchema = z.object({
+  id: z.string(),
+  name: z
+    .string()
+    .min(2, "Le nom doit contenir au moins 2 caractères")
+    .max(100, "100 caractères maximum"),
+});
+
+export type RewardFormData = z.infer<typeof rewardSchema>;
+
+/**
  * Schema for hunt general info (Step 1)
  */
 export const huntInfoSchema = z.object({
@@ -39,7 +52,7 @@ export const huntInfoSchema = z.object({
   duration: z
     .string()
     .min(1, "La durée est requise")
-    .regex(/^\d+h(\d{2})?$/, "Format invalide (ex: 1h30, 2h00)"),
+    .regex(/^\d{2}:\d{2}$/, "Format invalide (ex: 01:30, 02:00)"),
   reward: z.number().min(10, "Minimum 10 XP").max(5000, "Maximum 5000 XP"),
   maxParticipants: z
     .number()
@@ -57,7 +70,8 @@ export type HuntInfoFormData = z.infer<typeof huntInfoSchema>;
  */
 export const createHuntSchema = z.object({
   ...huntInfoSchema.shape,
-  steps: z.array(huntStepSchema).min(1, "Au moins une étape est requise"),
+  steps: z.array(huntStepSchema).min(2, "Au moins deux étapes sont requises"),
+  rewards: z.array(rewardSchema).min(1, "Au moins un cadeau est requis"),
 });
 
 export type CreateHuntFormData = z.infer<typeof createHuntSchema>;

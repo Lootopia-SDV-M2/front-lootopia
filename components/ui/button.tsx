@@ -10,8 +10,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * A premium, organic button component.
- * Features rounded pill shapes, elegant interaction, and brand colors.
+ * A premium button with gold gradient accents and glass morphism.
  */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -27,24 +26,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center gap-2 font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+      "relative inline-flex items-center justify-center gap-2 font-heading font-semibold tracking-wide transition-all duration-300 ease-spring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40";
 
     const variants = {
       primary:
-        "bg-primary text-primary-foreground rounded-pill hover:-translate-y-[2px] shadow-card hover:shadow-hover hover:bg-primary-hover",
+        "bg-gradient-to-r from-primary via-gold-500 to-primary text-primary-foreground rounded-xl hover:-translate-y-[1px] shadow-glow-sm hover:shadow-glow active:translate-y-0 active:shadow-glow-sm",
       secondary:
-        "bg-transparent border border-primary text-primary rounded-pill hover:bg-primary/5",
+        "bg-background-surface border border-black/[0.08] text-text-heading rounded-xl hover:border-primary/20 hover:bg-background-surface-alt hover:shadow-glow-sm",
       ghost:
-        "bg-transparent text-text-muted hover:text-primary hover:bg-primary/5 rounded-pill",
+        "bg-transparent text-text-muted hover:text-text-heading hover:bg-black/[0.03] rounded-xl",
       destructive:
-        "bg-status-error text-white rounded-pill hover:brightness-110 shadow-sm",
+        "bg-status-error/90 text-white rounded-xl hover:bg-status-error shadow-sm hover:shadow-md",
     };
 
     const sizes = {
       sm: "h-9 px-4 text-xs",
-      md: "h-[48px] px-8 text-base", // Mapping 'padding: 12px 32px' roughly to h-12 (48px)
-      lg: "h-14 px-10 text-lg",
-      icon: "h-12 w-12",
+      md: "h-11 px-6 text-sm",
+      lg: "h-13 px-8 text-base",
+      icon: "h-11 w-11",
     };
 
     return (
