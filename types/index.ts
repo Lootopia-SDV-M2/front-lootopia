@@ -112,3 +112,42 @@ export const XP_PER_LEVEL: Record<PlayerLevel, number> = {
   9: 3600,
   10: 4500,
 };
+
+// Participation types
+export type ParticipationStatus = "EN_COURS" | "ABANDONNE" | "TERMINE";
+
+export interface Participation {
+  id: string;
+  huntId: string;
+  huntTitle: string;
+  huntDifficulty: HuntDifficulty;
+  huntDuration: string;
+  huntReward: number;
+  creatorName: string;
+  currentStepIndex: number;
+  status: ParticipationStatus;
+  startedAt: string;
+  completedAt?: string;
+  steps: HuntStep[];
+  rewards?: Reward[];
+}
+
+// Artefact types
+export type ArtefactRarity = "common" | "rare" | "epic" | "legendary";
+
+export interface Artefact {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+  rarity: ArtefactRarity;
+  huntTitle: string;
+  obtainedAt: string;
+}
+
+export interface MarketListing {
+  id: string;
+  artefact: Artefact;
+  sellerName: string;
+  price: number;
+  listedAt: string;
+}

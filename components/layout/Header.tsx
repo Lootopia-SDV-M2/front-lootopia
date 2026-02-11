@@ -2,14 +2,24 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { LogIn, UserPlus } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { LogIn, UserPlus, Map, Package, Store, History } from "lucide-react";
 import { useAuthStore, usePlayerStore } from "@/lib/stores";
 import { Button } from "@/components/ui";
 import { Avatar } from "@/components/shared";
+import { cn } from "@/lib/utils";
+
+const playerNavItems = [
+  { href: "/map", icon: Map, label: "Carte" },
+  { href: "/inventory", icon: Package, label: "Inventaire" },
+  { href: "/marketplace", icon: Store, label: "Marche" },
+  { href: "/history", icon: History, label: "Historique" },
+];
 
 export function Header() {
   const { isAuthenticated, user } = useAuthStore();
   const { player } = usePlayerStore();
+  const pathname = usePathname();
 
   const displayName = user?.username || player?.username;
   const isPartner = user?.role === "partner";
@@ -29,6 +39,31 @@ export function Header() {
             LOOTOPIA
           </span>
         </Link>
+
+        {/* Desktop nav links for authenticated players */}
+        {isAuthenticated && !isPartner && (
+          <nav className="flex items-center gap-1">
+            {playerNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-text-muted hover:bg-black/[0.03] hover:text-text-heading"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
 
         <div className="flex items-center gap-3">
           {isAuthenticated && displayName ? (

@@ -2,12 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { LoadingScreen } from "@/components/shared";
-import type { Hunt } from "@/types";
+import type { Hunt, Participation } from "@/types";
 
-/**
- * Dynamically imported GameMap component.
- * Leaflet requires client-side rendering only.
- */
 const GameMap = dynamic(
   () => import("@/components/map/GameMap").then((mod) => mod.GameMap),
   {
@@ -20,6 +16,9 @@ export default function DynamicMap(props: {
   className?: string;
   hunts?: Hunt[];
   isPartner?: boolean;
+  mode?: "discovery" | "participation";
+  activeParticipation?: Participation | null;
+  onHuntSelect?: (hunt: Hunt) => void;
 }) {
   return <GameMap {...props} />;
 }

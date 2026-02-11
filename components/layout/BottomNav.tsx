@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Map, User, Rocket, Compass } from "lucide-react";
+import { Home, Map, User, Rocket, Package, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore, useAuthStore } from "@/lib/stores";
 
@@ -11,19 +11,44 @@ export function BottomNav() {
 
   const isPartner = user?.role === "partner";
 
-  const navItems = [
-    { id: "home" as const, href: "/", icon: Home, label: "Accueil" },
-    { id: "map" as const, href: "/map", icon: Map, label: "Carte" },
-    isPartner
-      ? { id: "create" as const, href: "/create", icon: Rocket, label: "Créer" }
-      : {
-          id: "hunts" as const,
-          href: "/hunts",
-          icon: Compass,
-          label: "Chasses",
+  const navItems = isPartner
+    ? [
+        { id: "home" as const, href: "/", icon: Home, label: "Accueil" },
+        { id: "map" as const, href: "/map", icon: Map, label: "Carte" },
+        {
+          id: "create" as const,
+          href: "/create",
+          icon: Rocket,
+          label: "Creer",
         },
-    { id: "profile" as const, href: "/profile", icon: User, label: "Profil" },
-  ];
+        {
+          id: "profile" as const,
+          href: "/profile",
+          icon: User,
+          label: "Profil",
+        },
+      ]
+    : [
+        { id: "map" as const, href: "/map", icon: Map, label: "Carte" },
+        {
+          id: "inventory" as const,
+          href: "/inventory",
+          icon: Package,
+          label: "Inventaire",
+        },
+        {
+          id: "marketplace" as const,
+          href: "/marketplace",
+          icon: Store,
+          label: "Marche",
+        },
+        {
+          id: "profile" as const,
+          href: "/profile",
+          icon: User,
+          label: "Profil",
+        },
+      ];
 
   return (
     <nav className="safe-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-black/[0.04] bg-background/90 backdrop-blur-2xl md:hidden">

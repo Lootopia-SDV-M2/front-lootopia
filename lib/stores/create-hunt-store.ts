@@ -254,7 +254,10 @@ export const useCreateHuntStore = create<CreateHuntState>((set, get) => ({
         .map((r) => r.imageFile)
         .filter((f): f is File => f !== null);
 
-      await huntApi.createHunt(huntData, rewardImages);
+      const createdHunt = await huntApi.createHunt(huntData, rewardImages);
+
+      // Auto-publish the hunt so it's visible to players
+      await huntApi.publishHunt(createdHunt.id);
 
       set({ isSubmitting: false, isSuccess: true });
       return true;

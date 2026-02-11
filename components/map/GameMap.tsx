@@ -5,12 +5,12 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useGeolocationStore } from "@/lib/stores";
 import { mockHunts } from "@/lib/data/mock-hunts";
 import { HuntMarker } from "./HuntMarker";
+import { StepMarker } from "./StepMarker";
 import { UserMarker } from "./UserMarker";
 import { MapControls } from "./MapControls";
-import type { Hunt } from "@/types";
+import type { Hunt, Participation } from "@/types";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet default marker icon issue
 import L from "leaflet";
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
   ._getIconUrl;
@@ -28,15 +28,13 @@ interface GameMapProps {
   className?: string;
   hunts?: Hunt[];
   isPartner?: boolean;
+  mode?: "discovery" | "participation";
+  activeParticipation?: Participation | null;
 }
 
-// Default center (Paris)
 const DEFAULT_CENTER: [number, number] = [48.8566, 2.3522];
 const DEFAULT_ZOOM = 13;
 
-/**
- * Component to handle map centering on user position
- */
 function MapCenterController({ center }: { center: [number, number] | null }) {
   const map = useMap();
 
@@ -49,15 +47,13 @@ function MapCenterController({ center }: { center: [number, number] | null }) {
   return null;
 }
 
-/**
- * Main game map component displaying hunts and user location.
- * Uses Leaflet with OpenStreetMap tiles.
- */
 export function GameMap({
   onHuntSelect,
   className,
   hunts,
   isPartner,
+  mode = "discovery",
+  activeParticipation,
 }: GameMapProps) {
   const {
     position,
@@ -68,11 +64,9 @@ export function GameMap({
     requestGeolocation,
   } = useGeolocationStore();
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
-  const [selectedHunt, setSelectedHunt] = useState<Hunt | null>(null);
 
   const displayedHunts = hunts ?? mockHunts;
 
-  // Use watchPosition for continuous GPS tracking
   useEffect(() => {
     const watchId = watchPosition();
     return () => {
@@ -82,7 +76,6 @@ export function GameMap({
     };
   }, [watchPosition, clearWatch]);
 
-  // Update map center when position changes
   useEffect(() => {
     if (position && !mapCenter) {
       setMapCenter([position.latitude, position.longitude]);
@@ -90,7 +83,6 @@ export function GameMap({
   }, [position, mapCenter]);
 
   const handleHuntClick = (hunt: Hunt) => {
-    setSelectedHunt(hunt);
     onHuntSelect?.(hunt);
   };
 
@@ -100,6 +92,12 @@ export function GameMap({
     } else {
       requestGeolocation();
     }
+  };
+
+  const getLabel = () => {
+    if (mode === "participation") return "Chasse en cours";
+    if (isPartner) return "Mes chasses";
+    return "Chasses disponibles";
   };
 
   return (
@@ -112,16 +110,13 @@ export function GameMap({
         className="h-full w-full rounded-2xl"
         zoomControl={false}
       >
-        {/* Map tiles */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Center controller */}
         <MapCenterController center={mapCenter} />
 
-        {/* User location marker */}
         {position && (
           <UserMarker
             position={[position.latitude, position.longitude]}
@@ -129,23 +124,44 @@ export function GameMap({
           />
         )}
 
-        {/* Hunt markers */}
-        {displayedHunts.map((hunt) => (
-          <HuntMarker key={hunt.id} hunt={hunt} onClick={handleHuntClick} />
-        ))}
+        {/* Discovery mode: show hunt markers */}
+        {mode === "discovery" &&
+          displayedHunts.map((hunt) => (
+            <HuntMarker key={hunt.id} hunt={hunt} onClick={handleHuntClick} />
+          ))}
+
+        {/* Participation mode: show step markers */}
+        {mode === "participation" &&
+          activeParticipation &&
+          activeParticipation.steps.map((step, index) => {
+            let status: "completed" | "current" | "locked";
+            if (index < activeParticipation.currentStepIndex) {
+              status = "completed";
+            } else if (index === activeParticipation.currentStepIndex) {
+              status = "current";
+            } else {
+              status = "locked";
+            }
+            return (
+              <StepMarker
+                key={step.id}
+                step={step}
+                index={index}
+                status={status}
+              />
+            );
+          })}
       </MapContainer>
 
-      {/* Map controls overlay */}
       <MapControls
         onCenterUser={handleCenterOnUser}
         isLoading={isLoading}
         error={error}
         hasPosition={!!position}
-        huntCount={displayedHunts.length}
-        label={isPartner ? "Mes chasses" : "Chasses disponibles"}
+        huntCount={mode === "participation" ? undefined : displayedHunts.length}
+        label={getLabel()}
       />
 
-      {/* Loading overlay */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-background/40 backdrop-blur-sm">
           <div className="rounded-2xl border border-black/[0.06] bg-background-surface/90 px-6 py-4 shadow-glass backdrop-blur-xl">
