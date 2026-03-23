@@ -104,6 +104,18 @@ mockUsers.set("partenaire@lootopia.fr", {
   password: "Partner123!",
 });
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return true;
+    const payload = JSON.parse(atob(parts[1]));
+    if (!payload.exp) return true;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+}
+
 function setAuthCookie(token: string) {
   if (typeof document !== "undefined") {
     document.cookie = `lootopia-auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
@@ -265,10 +277,13 @@ export const useAuthStore = create<AuthState>()(
       },
 
       checkAuth: () => {
-        if (typeof window === "undefined") {
-          return get().isAuthenticated;
+        const { token, isAuthenticated } = get();
+        if (!isAuthenticated || !token) return false;
+        if (isTokenExpired(token)) {
+          get().logout();
+          return false;
         }
-        return get().isAuthenticated;
+        return true;
       },
 
       clearError: () => set({ error: null }),
@@ -283,6 +298,11 @@ export const useAuthStore = create<AuthState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state?.token && isTokenExpired(state.token)) {
+          state.logout();
+        }
+      },
     }
   )
 );

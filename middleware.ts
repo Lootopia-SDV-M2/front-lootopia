@@ -12,6 +12,18 @@ const protectedRoutes = [
 ];
 const authRoutes = ["/login", "/register"];
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return true;
+    const payload = JSON.parse(atob(parts[1]));
+    if (!payload.exp) return true;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+}
+
 function getRoleFromToken(token: string): string | null {
   try {
     const parts = token.split(".");
@@ -33,13 +45,19 @@ export function middleware(request: NextRequest) {
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  if (isProtectedRoute && !token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
+  const isExpired = token ? isTokenExpired(token) : false;
+
+  if (isProtectedRoute && (!token || isExpired)) {
+    const response = NextResponse.redirect(
+      new URL(`/login?redirect=${pathname}`, request.url)
+    );
+    if (isExpired) {
+      response.cookies.delete("lootopia-auth-token");
+    }
+    return response;
   }
 
-  if (token) {
+  if (token && !isExpired) {
     const role = getRoleFromToken(token);
 
     // Redirect authenticated users away from auth routes based on role
