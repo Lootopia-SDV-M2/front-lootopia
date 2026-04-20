@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit, Fira_Code } from "next/font/google";
 import { Header, BottomNav, HealthCheck } from "@/components/layout";
+import { PWAInstallButton } from "@/components/ui/PWAInstallButton";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -64,6 +65,9 @@ export default function RootLayout({
 
         {/* Mobile Bottom Navigation */}
         <BottomNav />
+
+        {/* PWA Install Button */}
+        <PWAInstallButton />
       </body>
     </html>
   );

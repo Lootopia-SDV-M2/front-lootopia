@@ -4,3 +4,4 @@ export { usePlayerStore } from "./player-store";
 export { useCreateHuntStore } from "./create-hunt-store";
 export { useAuthStore } from "./auth-store";
 export { useParticipationStore } from "./participation-store";
+export { useMarketplaceStore } from "./marketplace-store";
