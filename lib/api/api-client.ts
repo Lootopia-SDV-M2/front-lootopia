@@ -20,6 +20,14 @@ function getAuthToken(): string | null {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("lootopia-auth");
+        localStorage.removeItem("lootopia-player");
+        localStorage.removeItem("lootopia-participations");
+        window.location.href = "/login";
+      }
+    }
     const errorBody = await response.text();
     throw new Error(errorBody || `HTTP error ${response.status}`);
   }
