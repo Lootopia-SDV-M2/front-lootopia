@@ -1,6 +1,7 @@
 "use client";
 
-import { MapPin, X, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import { MapPin, X, CheckCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui";
 import type { Participation, GeoPosition } from "@/types";
 import { calculateDistance } from "@/lib/data/mock-hunts";
@@ -19,6 +20,8 @@ export function ActiveHuntPanel({
   onValidateStep,
   onAbandon,
 }: ActiveHuntPanelProps) {
+  const [showAbandonModal, setShowAbandonModal] = useState(false);
+
   const currentStep = participation.steps[participation.currentStepIndex];
   if (!currentStep) return null;
 
@@ -55,9 +58,7 @@ export function ActiveHuntPanel({
             </p>
           </div>
           <button
-            onClick={() => {
-              if (confirm("Abandonner cette chasse ?")) onAbandon();
-            }}
+            onClick={() => setShowAbandonModal(true)}
             className="rounded-lg p-1.5 text-text-muted hover:bg-black/[0.04]"
             title="Abandonner"
           >
@@ -120,6 +121,56 @@ export function ActiveHuntPanel({
           {isInRange ? "Valider l'etape" : "Rapprochez-vous du point"}
         </Button>
       </div>
+
+      {showAbandonModal && (
+        <div
+          className="fixed inset-0 z-[2000] flex items-center justify-center p-4"
+          onClick={() => setShowAbandonModal(false)}
+        >
+          <div className="animate-in fade-in absolute inset-0 bg-black/60 backdrop-blur-sm duration-200" />
+          <div
+            className="animate-in zoom-in-95 relative w-full max-w-sm rounded-2xl border border-white/10 bg-background shadow-2xl duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-status-error/10">
+                <AlertTriangle className="h-6 w-6 text-status-error" />
+              </div>
+              <h3 className="mb-2 font-heading text-lg font-bold text-text-heading">
+                Abandonner la chasse ?
+              </h3>
+              <p className="mb-5 text-sm text-text-muted">
+                Votre progression sur{" "}
+                <span className="font-medium text-text-body">
+                  {participation.huntTitle}
+                </span>{" "}
+                sera perdue. Cette action est irreversible.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="flex-1"
+                  onClick={() => setShowAbandonModal(false)}
+                >
+                  Continuer
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="md"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowAbandonModal(false);
+                    onAbandon();
+                  }}
+                >
+                  Abandonner
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
