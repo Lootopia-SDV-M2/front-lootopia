@@ -331,17 +331,14 @@ export default function MarketplacePage() {
   const { listings, myListings, loading, error, fetchListings, fetchMyListings } =
     useMarketplaceStore();
 
-  const hasFetchedBuy = activeTab === "buy" && listings.length > 0;
-  const hasFetchedSell = activeTab === "sell" && myListings.length > 0;
+  const fetchListsRef = useRef(false);
 
   useEffect(() => {
-    if (activeTab === "buy" && !hasFetchedBuy) {
-      fetchListings();
-    }
-    if (activeTab === "sell" && !hasFetchedSell) {
-      fetchMyListings();
-    }
-  }, [activeTab, hasFetchedBuy, hasFetchedSell, fetchListings, fetchMyListings]);
+    if (fetchListsRef.current) return;
+    fetchListsRef.current = true;
+    if (activeTab === "buy") fetchListings();
+    else if (activeTab === "sell") fetchMyListings();
+  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isBuyLoading = activeTab === "buy" && loading;
   const isSellLoading = activeTab === "sell" && loading;
