@@ -5,6 +5,7 @@ import { Store, Package, Plus, X, ShoppingCart, AlertCircle } from "lucide-react
 import { PageContainer, EmptyState } from "@/components/shared";
 import { Button, Input, Card } from "@/components/ui";
 import { useMarketplaceStore } from "@/lib/stores/marketplace-store";
+import { useToastStore } from "@/lib/stores/toast-store";
 import { marketplaceApi, type ArtefactDTO } from "@/lib/api/marketplace-api";
 import { getRarityColor, getRarityLabel } from "@/lib/data/mock-artefacts";
 import { cn } from "@/lib/utils";
@@ -42,18 +43,12 @@ function StatusBadge({ status }: { status: string }) {
 function BuyCard({ listing }: { listing: ReturnType<typeof useMarketplaceStore.getState>["listings"][number] }) {
   const buyListing = useMarketplaceStore((s) => s.buyListing);
   const [buying, setBuying] = useState(false);
-  const [bought, setBought] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function handleBuy() {
-    if (buying || bought) return;
+    if (buying || listing.status === "VENDU") return;
     setBuying(true);
-    setError(null);
     try {
       await buyListing(listing.id);
-      setBought(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'achat.");
     } finally {
       setBuying(false);
     }
@@ -90,7 +85,7 @@ function BuyCard({ listing }: { listing: ReturnType<typeof useMarketplaceStore.g
         <p className="text-sm font-bold text-primary">{listing.price} XP</p>
       </div>
 
-      {bought ? (
+      {listing.status === "VENDU" ? (
         <div className="flex items-center gap-1.5 rounded-xl bg-status-success/10 px-3 py-2 text-xs font-medium text-status-success">
           Achat effectue !
         </div>
@@ -106,13 +101,6 @@ function BuyCard({ listing }: { listing: ReturnType<typeof useMarketplaceStore.g
           <ShoppingCart className="h-4 w-4" />
           Acheter
         </Button>
-      )}
-
-      {error && (
-        <p className="mt-2 flex items-center gap-1 text-xs text-status-error">
-          <AlertCircle className="h-3 w-3" />
-          {error}
-        </p>
       )}
     </div>
   );
@@ -168,6 +156,7 @@ interface SellModalProps {
 
 function SellModal({ open, onClose }: SellModalProps) {
   const listArtefact = useMarketplaceStore((s) => s.listArtefact);
+  const toast = useToastStore((s) => s.addToast);
   const [artefacts, setArtefacts] = useState<ArtefactDTO[]>([]);
   const [loadingArtefacts, setLoadingArtefacts] = useState(false);
   const [artefactError, setArtefactError] = useState<string | null>(null);
@@ -176,7 +165,6 @@ function SellModal({ open, onClose }: SellModalProps) {
   const [price, setPrice] = useState("");
   const [type, setType] = useState<"VENTE_DIRECTE" | "ENCHERE">("VENTE_DIRECTE");
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -198,12 +186,13 @@ function SellModal({ open, onClose }: SellModalProps) {
     setSubmitError(null);
     try {
       await listArtefact(selectedId, Number(price), type);
+      toast("Artefact mis en vente !", "success");
       onClose();
       setSelectedId(null);
       setPrice("");
       setType("VENTE_DIRECTE");
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Erreur lors de la mise en vente.");
+      toast(err instanceof Error ? err.message : "Erreur lors de la mise en vente.", "error");
     } finally {
       setSubmitting(false);
     }
@@ -291,13 +280,6 @@ function SellModal({ open, onClose }: SellModalProps) {
               </label>
             </div>
           </div>
-
-          {submitError && (
-            <p className="flex items-center gap-1.5 text-sm text-status-error">
-              <AlertCircle className="h-4 w-4" />
-              {submitError}
-            </p>
-          )}
 
           <Button type="submit" className="w-full" isLoading={submitting} disabled={submitting}>
             Mettre en vente

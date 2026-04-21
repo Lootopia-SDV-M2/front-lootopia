@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { marketplaceApi, type MarketListingResponse } from "@/lib/api/marketplace-api";
+import { useToastStore } from "@/lib/stores/toast-store";
 
 interface MarketplaceState {
   listings: MarketListingResponse[];
@@ -8,12 +9,12 @@ interface MarketplaceState {
   error: string | null;
   fetchListings: () => Promise<void>;
   fetchMyListings: () => Promise<void>;
-  buyListing: (id: number) => Promise<{ message: string; transactionId: number }>;
+  buyListing: (id: number) => Promise<void>;
   listArtefact: (
     artefactId: number,
     price: number,
     type: "VENTE_DIRECTE" | "ENCHERE"
-  ) => Promise<MarketListingResponse>;
+  ) => Promise<void>;
 }
 
 export const useMarketplaceStore = create<MarketplaceState>((set) => ({
@@ -49,13 +50,19 @@ export const useMarketplaceStore = create<MarketplaceState>((set) => ({
   },
 
   buyListing: async (id: number) => {
-    const result = await marketplaceApi.buyListing(id);
-    set((state) => ({
-      listings: state.listings.map((l) =>
-        l.id === id ? { ...l, status: "VENDU" as const } : l
-      ),
-    }));
-    return result;
+    const toast = useToastStore.getState().addToast;
+    try {
+      const result = await marketplaceApi.buyListing(id);
+      set((state) => ({
+        listings: state.listings.map((l) =>
+          l.id === id ? { ...l, status: "VENDU" as const } : l
+        ),
+      }));
+      toast(result.message, "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Erreur lors de l'achat.", "error");
+      throw err;
+    }
   },
 
   listArtefact: async (
@@ -63,10 +70,16 @@ export const useMarketplaceStore = create<MarketplaceState>((set) => ({
     price: number,
     type: "VENTE_DIRECTE" | "ENCHERE"
   ) => {
-    const newListing = await marketplaceApi.listArtefact({ artefactId, price, type });
-    set((state) => ({
-      myListings: [newListing, ...state.myListings],
-    }));
-    return newListing;
+    const toast = useToastStore.getState().addToast;
+    try {
+      const newListing = await marketplaceApi.listArtefact({ artefactId, price, type });
+      set((state) => ({
+        myListings: [newListing, ...state.myListings],
+      }));
+      toast("Artefact mis en vente !", "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Erreur lors de la mise en vente.", "error");
+      throw err;
+    }
   },
 }));
