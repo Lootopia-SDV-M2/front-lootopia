@@ -7,7 +7,6 @@ const protectedRoutes = [
   "/hunts",
   "/hunt",
   "/inventory",
-  "/marketplace",
   "/history",
 ];
 const authRoutes = ["/login", "/register"];

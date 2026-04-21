@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LogIn, UserPlus, Map, Package, Store, History } from "lucide-react";
+import { LogIn, UserPlus, Map, Package, History } from "lucide-react";
 import { useAuthStore, usePlayerStore } from "@/lib/stores";
 import { Button } from "@/components/ui";
 import { Avatar } from "@/components/shared";
@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 const playerNavItems = [
   { href: "/map", icon: Map, label: "Carte" },
   { href: "/inventory", icon: Package, label: "Inventaire" },
-  { href: "/marketplace", icon: Store, label: "Marche" },
   { href: "/history", icon: History, label: "Historique" },
 ];
 

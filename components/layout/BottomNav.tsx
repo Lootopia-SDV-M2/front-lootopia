@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Map, User, Rocket, Package, Store } from "lucide-react";
+import { Home, Map, User, Rocket, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore, useAuthStore } from "@/lib/stores";
 
@@ -35,12 +35,6 @@ export function BottomNav() {
           href: "/inventory",
           icon: Package,
           label: "Inventaire",
-        },
-        {
-          id: "marketplace" as const,
-          href: "/marketplace",
-          icon: Store,
-          label: "Marche",
         },
         {
           id: "profile" as const,
