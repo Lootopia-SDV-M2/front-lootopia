@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useGeolocationStore } from "@/lib/stores";
 import { mockHunts } from "@/lib/data/mock-hunts";
@@ -72,10 +72,13 @@ export function GameMap({
     requestGeolocation,
   } = useGeolocationStore();
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const geolocationStartedRef = useRef(false);
 
   const displayedHunts = hunts ?? mockHunts;
 
   useEffect(() => {
+    if (geolocationStartedRef.current) return;
+    geolocationStartedRef.current = true;
     const watchId = watchPosition();
     return () => {
       if (watchId !== null) {
