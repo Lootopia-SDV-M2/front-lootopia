@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Store, Package, Plus, X, ShoppingCart, AlertCircle } from "lucide-react";
 import { PageContainer, EmptyState } from "@/components/shared";
 import { Button, Input, Card } from "@/components/ui";
