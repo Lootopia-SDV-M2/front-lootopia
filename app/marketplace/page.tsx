@@ -183,7 +183,6 @@ function SellModal({ open, onClose }: SellModalProps) {
     e.preventDefault();
     if (!selectedId || !price) return;
     setSubmitting(true);
-    setSubmitError(null);
     try {
       await listArtefact(selectedId, Number(price), type);
       toast("Artefact mis en vente !", "success");
