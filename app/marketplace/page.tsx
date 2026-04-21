@@ -378,13 +378,13 @@ export default function MarketplacePage() {
         {/* Buy tab */}
         {activeTab === "buy" && (
           <>
-            {isBuyLoading && !hasFetchedBuy ? (
+            {isBuyLoading ? (
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <ListingSkeleton key={i} />
                 ))}
               </div>
-            ) : error && !hasFetchedBuy ? (
+            ) : error ? (
               <EmptyState
                 icon={<AlertCircle className="h-8 w-8 text-status-error" />}
                 title="Erreur de chargement"
@@ -421,13 +421,13 @@ export default function MarketplacePage() {
               </Button>
             </div>
 
-            {isSellLoading && !hasFetchedSell ? (
+            {isSellLoading ? (
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <ListingSkeleton key={i} />
                 ))}
               </div>
-            ) : error && !hasFetchedSell ? (
+            ) : error ? (
               <EmptyState
                 icon={<AlertCircle className="h-8 w-8 text-status-error" />}
                 title="Erreur de chargement"
