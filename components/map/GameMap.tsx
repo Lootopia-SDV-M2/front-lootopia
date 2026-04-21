@@ -77,15 +77,13 @@ export function GameMap({
   const displayedHunts = hunts ?? mockHunts;
 
   useEffect(() => {
-    if (geolocationStartedRef.current) return;
+    // Destructuring creates new references on every render.
+    // Wrap in ref so this effect only runs once on mount.
+    const started = geolocationStartedRef.current;
+    if (started) return;
     geolocationStartedRef.current = true;
-    const watchId = watchPosition();
-    return () => {
-      if (watchId !== null) {
-        clearWatch(watchId);
-      }
-    };
-  }, [watchPosition, clearWatch]);
+    watchPosition();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (position && !mapCenter) {
