@@ -4,7 +4,16 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, Mail, Lock, User, UserPlus, Search, Crown } from "lucide-react";
+import {
+  Building2,
+  Crown,
+  Eye,
+  Lock,
+  Mail,
+  Search,
+  User,
+  UserPlus,
+} from "lucide-react";
 import { Button, Card, Input } from "@/components/ui";
 import { Alert } from "@/components/shared";
 import { useAuthStore } from "@/lib/stores";
@@ -44,6 +53,7 @@ function RegisterForm() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    siret: "",
     password: "",
     confirmPassword: "",
     acceptTerms: false,
@@ -73,7 +83,10 @@ function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = registerSchema.safeParse(formData);
+    const result = registerSchema.safeParse({
+      ...formData,
+      role: selectedRole,
+    });
     if (!result.success) {
       const errors: Record<string, string> = {};
       result.error.issues.forEach((issue) => {
@@ -89,7 +102,8 @@ function RegisterForm() {
       formData.username,
       formData.email,
       formData.password,
-      selectedRole
+      selectedRole,
+      selectedRole === "ORGANISATEUR" ? result.data.siret : undefined
     );
     if (success) {
       const user = useAuthStore.getState().user;
@@ -225,6 +239,35 @@ function RegisterForm() {
               </p>
             )}
           </div>
+
+          {selectedRole === "ORGANISATEUR" && (
+            <div>
+              <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
+                Numero SIRET
+              </label>
+              <div className="relative">
+                <Building2 className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                <Input
+                  type="text"
+                  name="siret"
+                  inputMode="numeric"
+                  placeholder="123 456 789 00012"
+                  value={formData.siret}
+                  onChange={handleChange}
+                  error={!!validationErrors.siret}
+                  className="pl-11"
+                />
+              </div>
+              <p className="mt-1 text-xs text-text-muted">
+                Ce numero sera analyse par l&apos;equipe avant validation.
+              </p>
+              {validationErrors.siret && (
+                <p className="mt-1 text-xs text-status-error">
+                  {validationErrors.siret}
+                </p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">

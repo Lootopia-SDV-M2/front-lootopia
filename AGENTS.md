@@ -163,7 +163,8 @@ Les stores sont dans `lib/stores/`. Certains sont persistés dans `localStorage`
 
 ### Inscription
 
-- Endpoint : `POST /api/auth/register` avec `{ username, email, password, role }`.
+- Endpoint : `POST /api/auth/register` avec `{ username, email, password, role, siret? }`.
+- Pour `role = ORGANISATEUR`, le champ `siret` est obligatoire, normalisÃ© en 14 chiffres et destinÃ© Ã  Ãªtre analysÃ© par l'Ã©quipe avant validation.
 - Fallback mock si backend indisponible.
 
 ---

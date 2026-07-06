@@ -35,7 +35,8 @@ interface AuthState {
     username: string,
     email: string,
     password: string,
-    role?: "CHERCHEUR" | "ORGANISATEUR"
+    role?: "CHERCHEUR" | "ORGANISATEUR",
+    siret?: string
   ) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => boolean;
@@ -184,13 +185,19 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      register: async (username, email, password, role = "CHERCHEUR") => {
+      register: async (
+        username,
+        email,
+        password,
+        role = "CHERCHEUR",
+        siret
+      ) => {
         set({ isLoading: true, error: null });
 
         try {
           const response = await apiClient.post<AuthApiResponse>(
             "/api/auth/register",
-            { username, email, password, role }
+            { username, email, password, role, siret }
           );
 
           const user: AuthUser = {

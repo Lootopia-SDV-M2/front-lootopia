@@ -43,6 +43,14 @@ export const registerSchema = z
       .regex(/[a-z]/, "Le mot de passe doit contenir au moins une minuscule")
       .regex(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre"),
     confirmPassword: z.string().min(1, "Veuillez confirmer votre mot de passe"),
+    role: z.enum(["CHERCHEUR", "ORGANISATEUR"]).optional(),
+    siret: z
+      .string()
+      .optional()
+      .transform((value) => value?.replace(/\s/g, "") ?? "")
+      .refine((value) => value === "" || /^\d{14}$/.test(value), {
+        message: "Le SIRET doit contenir 14 chiffres",
+      }),
     acceptTerms: z.boolean().refine((val) => val === true, {
       message: "Vous devez accepter les conditions",
     }),
@@ -50,6 +58,10 @@ export const registerSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
+  })
+  .refine((data) => data.role !== "ORGANISATEUR" || !!data.siret, {
+    message: "Le SIRET est requis pour un compte organisateur",
+    path: ["siret"],
   });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
