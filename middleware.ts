@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const protectedRoutes = ["/profile", "/create", "/hunts", "/hunt"];
-const authRoutes = ["/login", "/register"];
+const authRoutes = ["/login", "/register", "/forgot-password"];
 
 function getRoleFromToken(token: string): string | null {
   try {
