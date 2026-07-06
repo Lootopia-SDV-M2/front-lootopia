@@ -38,8 +38,6 @@ export const viewport: Viewport = {
   themeColor: "#faf8f4",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export default function RootLayout({
@@ -52,7 +50,7 @@ export default function RootLayout({
       lang="fr"
       className={cn(inter.variable, outfit.variable, firaCode.variable)}
     >
-      <body className="noise-overlay relative min-h-screen bg-background font-sans text-text-body antialiased selection:bg-primary/20 selection:text-primary">
+      <body className="relative min-h-screen bg-background font-sans text-text-body antialiased selection:bg-primary/20 selection:text-primary">
         {/* Backend health check */}
         <HealthCheck />
 

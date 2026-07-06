@@ -5,18 +5,15 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "glass" | "interactive";
 }
 
-/**
- * A glass-morphism card with warm dark surfaces.
- */
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const variants = {
       default:
-        "bg-background-surface rounded-xl border border-black/[0.06] shadow-card",
+        "rounded-lg border border-black/[0.06] bg-background-surface shadow-sm",
       interactive:
-        "bg-background-surface rounded-xl border border-black/[0.06] shadow-card transition-all duration-500 ease-spring hover:border-primary/15 hover:shadow-glow-sm hover:-translate-y-0.5",
+        "rounded-lg border border-black/[0.06] bg-background-surface shadow-sm transition-colors duration-200 hover:border-primary/20 hover:bg-background-surface-alt",
       glass:
-        "bg-background-surface/60 backdrop-blur-xl rounded-xl border border-black/[0.06] shadow-glass",
+        "rounded-lg border border-black/[0.06] bg-background-surface shadow-sm",
     };
 
     return (

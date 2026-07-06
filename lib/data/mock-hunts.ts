@@ -1,8 +1,73 @@
-import type { Hunt, HuntStep } from "@/types";
+import type { Hunt, HuntDifficulty, HuntStep } from "@/types";
 
-/**
- * Create steps for a hunt
- */
+const DIFFICULTIES: HuntDifficulty[] = ["easy", "medium", "hard", "expert"];
+
+const CITY_ANCHORS = [
+  ["Paris", 48.8566, 2.3522],
+  ["Marseille", 43.2965, 5.3698],
+  ["Lyon", 45.764, 4.8357],
+  ["Toulouse", 43.6047, 1.4442],
+  ["Nice", 43.7102, 7.262],
+  ["Nantes", 47.2184, -1.5536],
+  ["Strasbourg", 48.5734, 7.7521],
+  ["Montpellier", 43.6119, 3.8772],
+  ["Bordeaux", 44.8378, -0.5792],
+  ["Lille", 50.6292, 3.0573],
+  ["Rennes", 48.1173, -1.6778],
+  ["Reims", 49.2583, 4.0317],
+  ["Le Havre", 49.4944, 0.1079],
+  ["Saint-Etienne", 45.4397, 4.3872],
+  ["Toulon", 43.1242, 5.928],
+  ["Grenoble", 45.1885, 5.7245],
+  ["Dijon", 47.322, 5.0415],
+  ["Angers", 47.4784, -0.5632],
+  ["Nimes", 43.8367, 4.3601],
+  ["Villeurbanne", 45.7719, 4.8902],
+  ["Clermont-Ferrand", 45.7772, 3.087],
+  ["Le Mans", 48.0061, 0.1996],
+  ["Aix-en-Provence", 43.5297, 5.4474],
+  ["Brest", 48.3904, -4.4861],
+  ["Tours", 47.3941, 0.6848],
+  ["Amiens", 49.8941, 2.2958],
+  ["Limoges", 45.8336, 1.2611],
+  ["Annecy", 45.8992, 6.1294],
+  ["Perpignan", 42.6887, 2.8948],
+  ["Metz", 49.1193, 6.1757],
+  ["Besancon", 47.2378, 6.0241],
+  ["Orleans", 47.9029, 1.9093],
+  ["Rouen", 49.4431, 1.0993],
+  ["Mulhouse", 47.7508, 7.3359],
+  ["Caen", 49.1829, -0.3707],
+  ["Nancy", 48.6921, 6.1844],
+  ["Pau", 43.2951, -0.3708],
+  ["La Rochelle", 46.1603, -1.1511],
+  ["Avignon", 43.9493, 4.8055],
+  ["Poitiers", 46.5802, 0.3404],
+  ["Bayonne", 43.4929, -1.4748],
+  ["Saint-Malo", 48.6493, -2.0257],
+  ["Quimper", 47.996, -4.1025],
+  ["Vannes", 47.6582, -2.7608],
+  ["Ajaccio", 41.9192, 8.7386],
+  ["Bastia", 42.6973, 9.4509],
+  ["Chambery", 45.5646, 5.9178],
+  ["Valence", 44.9334, 4.8924],
+  ["Laon", 49.5639, 3.6244],
+  ["Biarritz", 43.4832, -1.5586],
+] as const;
+
+const THEMES = [
+  "Tresor urbain",
+  "Mystere historique",
+  "Parcours gourmand",
+  "Legende locale",
+  "Defi photo",
+  "Secret de quartier",
+  "Balade nature",
+  "Enigme patrimoine",
+  "Mission famille",
+  "Route des artisans",
+] as const;
+
 function createSteps(
   huntId: string,
   baseLatitude: number,
@@ -12,8 +77,8 @@ function createSteps(
     {
       id: `${huntId}-step-1`,
       order: 1,
-      title: "Point de départ",
-      description: "Rendez-vous au point de départ pour commencer l'aventure.",
+      title: "Point de depart",
+      description: "Rendez-vous au point de depart pour commencer l'aventure.",
       latitude: baseLatitude + 0.001,
       longitude: baseLongitude + 0.001,
       radius: 20,
@@ -22,13 +87,13 @@ function createSteps(
         {
           id: `${huntId}-clue-1-1`,
           order: 1,
-          text: "Cherchez près de la fontaine",
+          text: "Cherchez pres du lieu le plus anime.",
           unlocked: true,
         },
         {
           id: `${huntId}-clue-1-2`,
           order: 2,
-          text: "Le chiffre sur la plaque vous guidera",
+          text: "Un detail grave vous donnera la suite.",
           unlocked: false,
         },
       ],
@@ -36,8 +101,8 @@ function createSteps(
     {
       id: `${huntId}-step-2`,
       order: 2,
-      title: "L'indice caché",
-      description: "Trouvez le prochain indice pour avancer dans la quête.",
+      title: "Indice cache",
+      description: "Trouvez le prochain indice pour avancer dans la quete.",
       latitude: baseLatitude + 0.002,
       longitude: baseLongitude - 0.001,
       radius: 20,
@@ -46,13 +111,13 @@ function createSteps(
         {
           id: `${huntId}-clue-2-1`,
           order: 1,
-          text: "Regardez vers le nord",
+          text: "Regardez vers le nord.",
           unlocked: true,
         },
         {
           id: `${huntId}-clue-2-2`,
           order: 2,
-          text: "Le banc vert cache un secret",
+          text: "Le mobilier urbain cache souvent un secret.",
           unlocked: false,
         },
       ],
@@ -60,8 +125,8 @@ function createSteps(
     {
       id: `${huntId}-step-3`,
       order: 3,
-      title: "Le trésor final",
-      description: "Le trésor vous attend ! Creusez pour le découvrir.",
+      title: "Tresor final",
+      description: "Le tresor vous attend a la derniere etape.",
       latitude: baseLatitude,
       longitude: baseLongitude,
       radius: 20,
@@ -70,13 +135,13 @@ function createSteps(
         {
           id: `${huntId}-clue-3-1`,
           order: 1,
-          text: "Vous y êtes presque !",
+          text: "Vous y etes presque.",
           unlocked: true,
         },
         {
           id: `${huntId}-clue-3-2`,
           order: 2,
-          text: "Sous le grand arbre...",
+          text: "Cherchez le point de vue le plus calme.",
           unlocked: false,
         },
       ],
@@ -84,124 +149,63 @@ function createSteps(
   ];
 }
 
-/**
- * Mock hunt data for development and testing.
- * Simulates treasure hunts around Paris area.
- */
-export const mockHunts: Hunt[] = [
-  {
-    id: "hunt-001",
-    title: "Le Trésor du Marais",
-    description:
-      "Explorez les ruelles historiques du Marais à la recherche d'un trésor caché depuis le 17ème siècle. Cette aventure vous fera découvrir les secrets les mieux gardés de ce quartier emblématique de Paris.",
-    difficulty: "easy",
-    latitude: 48.8566,
-    longitude: 2.3522,
-    reward: 150,
-    duration: "1h30",
-    participantsCount: 12,
-    maxParticipants: 20,
-    createdAt: "2026-01-10T10:00:00Z",
-    startsAt: "2026-01-20T14:00:00Z",
-    imageUrl: "/images/hunts/hunt-001.jpg",
-    steps: createSteps("hunt-001", 48.8566, 2.3522),
-  },
-  {
-    id: "hunt-002",
-    title: "Mystères de Montmartre",
-    description:
-      "Gravissez la butte Montmartre et découvrez les secrets des artistes qui y ont vécu. De Picasso à Van Gogh, suivez leurs traces dans ce parcours artistique unique.",
-    difficulty: "medium",
-    latitude: 48.8867,
-    longitude: 2.3431,
-    reward: 250,
-    duration: "2h00",
-    participantsCount: 8,
-    maxParticipants: 15,
-    createdAt: "2026-01-08T14:30:00Z",
-    startsAt: "2026-01-22T10:00:00Z",
-    imageUrl: "/images/hunts/hunt-002.jpg",
-    steps: createSteps("hunt-002", 48.8867, 2.3431),
-  },
-  {
-    id: "hunt-003",
-    title: "L'Énigme de la Tour Eiffel",
-    description:
-      "Une chasse au trésor épique autour du monument le plus célèbre de Paris. Résolvez les énigmes de Gustave Eiffel lui-même pour découvrir le trésor.",
-    difficulty: "hard",
-    latitude: 48.8584,
-    longitude: 2.2945,
-    reward: 500,
-    duration: "3h00",
-    participantsCount: 5,
-    maxParticipants: 10,
-    createdAt: "2026-01-05T09:00:00Z",
-    startsAt: "2026-01-25T11:00:00Z",
-    imageUrl: "/images/hunts/hunt-003.jpg",
-    steps: createSteps("hunt-003", 48.8584, 2.2945),
-  },
-  {
-    id: "hunt-004",
-    title: "Les Catacombes Secrètes",
-    description:
-      "Plongez dans les profondeurs de Paris pour une aventure souterraine inoubliable. Attention, cette chasse n'est pas pour les âmes sensibles !",
-    difficulty: "expert",
-    latitude: 48.8339,
-    longitude: 2.3324,
-    reward: 1000,
-    duration: "4h00",
-    participantsCount: 3,
-    maxParticipants: 8,
-    createdAt: "2026-01-12T16:00:00Z",
-    startsAt: "2026-01-28T09:00:00Z",
-    imageUrl: "/images/hunts/hunt-004.jpg",
-    steps: createSteps("hunt-004", 48.8339, 2.3324),
-  },
-  {
-    id: "hunt-005",
-    title: "Jardin du Luxembourg",
-    description:
-      "Une balade ludique à travers les allées du jardin royal préféré des Parisiens. Parfait pour une sortie en famille !",
-    difficulty: "easy",
-    latitude: 48.8462,
-    longitude: 2.3372,
-    reward: 100,
-    duration: "1h00",
-    participantsCount: 18,
-    maxParticipants: 25,
-    createdAt: "2026-01-14T11:00:00Z",
-    imageUrl: "/images/hunts/hunt-005.jpg",
-    steps: createSteps("hunt-005", 48.8462, 2.3372),
-  },
-  {
-    id: "hunt-006",
-    title: "La Défense Futuriste",
-    description:
-      "Découvrez les trésors cachés du quartier d'affaires le plus moderne de Paris. Architecture et technologie au rendez-vous !",
-    difficulty: "medium",
-    latitude: 48.8918,
-    longitude: 2.2362,
-    reward: 300,
-    duration: "2h30",
-    participantsCount: 6,
-    maxParticipants: 12,
-    createdAt: "2026-01-13T13:00:00Z",
-    startsAt: "2026-01-30T15:00:00Z",
-    imageUrl: "/images/hunts/hunt-006.jpg",
-    steps: createSteps("hunt-006", 48.8918, 2.2362),
-  },
-];
+function seededNoise(seed: number): number {
+  const value = Math.sin(seed * 12.9898) * 43758.5453;
+  return value - Math.floor(value);
+}
 
-/**
- * Get a hunt by ID
- */
+function offsetCoordinate(base: number, seed: number, spread: number): number {
+  return Number((base + (seededNoise(seed) - 0.5) * spread).toFixed(5));
+}
+
+function createMockHunt(index: number): Hunt {
+  const anchor = CITY_ANCHORS[index % CITY_ANCHORS.length];
+  const localIndex = Math.floor(index / CITY_ANCHORS.length);
+  const id = `hunt-${String(index + 1).padStart(3, "0")}`;
+  const city = anchor[0];
+  const difficulty = DIFFICULTIES[index % DIFFICULTIES.length];
+  const theme = THEMES[index % THEMES.length];
+  const rewardBase =
+    difficulty === "expert"
+      ? 650
+      : difficulty === "hard"
+        ? 420
+        : difficulty === "medium"
+          ? 260
+          : 140;
+  const latitude = offsetCoordinate(anchor[1], index + 11, 0.34);
+  const longitude = offsetCoordinate(anchor[2], index + 29, 0.42);
+
+  return {
+    id,
+    title: `${theme} - ${city} #${localIndex + 1}`,
+    description: `Une chasse ${getDifficultyLabel(difficulty).toLowerCase()} autour de ${city}, avec indices geolocalises, observation et recompense XP.`,
+    difficulty,
+    latitude,
+    longitude,
+    reward: rewardBase + (index % 7) * 25,
+    duration: `${1 + (index % 4)}h${index % 2 === 0 ? "00" : "30"}`,
+    participantsCount: 3 + (index % 38),
+    maxParticipants: 12 + (index % 24),
+    createdAt: new Date(
+      Date.UTC(2026, index % 12, (index % 27) + 1)
+    ).toISOString(),
+    startsAt: new Date(
+      Date.UTC(2026, (index + 1) % 12, (index % 27) + 1, 10)
+    ).toISOString(),
+    imageUrl: `/images/hunts/hunt-${String((index % 6) + 1).padStart(3, "0")}.jpg`,
+    steps: createSteps(id, latitude, longitude),
+  };
+}
+
+export const mockHunts: Hunt[] = Array.from({ length: 500 }, (_, index) =>
+  createMockHunt(index)
+);
+
 export function getHuntById(id: string): Hunt | undefined {
   return mockHunts.find((hunt) => hunt.id === id);
 }
 
-/**
- * Get difficulty color for UI display
- */
 export function getDifficultyColor(difficulty: Hunt["difficulty"]): string {
   const colors = {
     easy: "from-emerald-400 to-green-500",
@@ -212,9 +216,6 @@ export function getDifficultyColor(difficulty: Hunt["difficulty"]): string {
   return colors[difficulty];
 }
 
-/**
- * Get difficulty label in French
- */
 export function getDifficultyLabel(difficulty: Hunt["difficulty"]): string {
   const labels = {
     easy: "Facile",
@@ -225,25 +226,25 @@ export function getDifficultyLabel(difficulty: Hunt["difficulty"]): string {
   return labels[difficulty];
 }
 
-/**
- * Calculate distance between two coordinates in meters
- */
 export function calculateDistance(
   lat1: number,
   lon1: number,
   lat2: number,
   lon2: number
 ): number {
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = (lat1 * Math.PI) / 180;
-  const φ2 = (lat2 * Math.PI) / 180;
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+  const earthRadiusMeters = 6371e3;
+  const phi1 = (lat1 * Math.PI) / 180;
+  const phi2 = (lat2 * Math.PI) / 180;
+  const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+  const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) *
+      Math.cos(phi2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c;
+  return earthRadiusMeters * c;
 }

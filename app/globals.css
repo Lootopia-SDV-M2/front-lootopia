@@ -141,15 +141,16 @@
 }
 
 .leaflet-popup-content-wrapper {
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(28, 27, 24, 0.12);
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.06);
   color: #4d4b47;
 }
 
 .leaflet-popup-content {
-  margin: 10px 14px;
+  margin: 14px;
+  line-height: 1.4;
 }
 
 .leaflet-popup-tip {
@@ -157,12 +158,52 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
+.lootopia-hunt-popup .leaflet-popup-content-wrapper {
+  overflow: hidden;
+}
+
+.lootopia-hunt-popup .leaflet-popup-close-button {
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: #908e88;
+  font-size: 22px;
+  line-height: 25px;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.lootopia-hunt-popup .leaflet-popup-close-button:hover,
+.lootopia-hunt-popup .leaflet-popup-close-button:focus-visible {
+  background: rgba(28, 27, 24, 0.06);
+  color: #1c1b18;
+}
+
+.leaflet-container .lootopia-popup-link,
+.leaflet-container .lootopia-popup-link:hover,
+.leaflet-container .lootopia-popup-link:focus {
+  color: #fff8e6;
+  text-decoration: none;
+}
+
 /* Custom marker styles */
 .hunt-marker,
+.hunt-cluster-marker,
 .user-marker,
 .creator-marker {
   background: transparent !important;
   border: none !important;
+}
+
+.hunt-cluster-marker {
+  transition: transform 160ms ease;
+}
+
+.hunt-cluster-marker:hover {
+  transform: scale(1.06);
 }
 
 /* Victory modal animations */

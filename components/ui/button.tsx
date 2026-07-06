@@ -9,9 +9,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-/**
- * A premium button with gold gradient accents and glass morphism.
- */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -26,24 +23,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "relative inline-flex items-center justify-center gap-2 font-heading font-semibold tracking-wide transition-all duration-300 ease-spring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-40";
+      "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border font-sans font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:opacity-45";
 
     const variants = {
       primary:
-        "bg-gradient-to-r from-primary via-gold-500 to-primary text-primary-foreground rounded-xl hover:-translate-y-[1px] shadow-glow-sm hover:shadow-glow active:translate-y-0 active:shadow-glow-sm",
+        "border-[#3a2a0a] bg-[#2a2418] text-[#fff8e6] shadow-[0_1px_2px_rgba(42,36,24,0.18),inset_0_1px_0_rgba(255,255,255,0.10)] hover:border-[#4a3710] hover:bg-[#3a2d14] active:bg-[#18140d]",
       secondary:
-        "bg-background-surface border border-black/[0.08] text-text-heading rounded-xl hover:border-primary/20 hover:bg-background-surface-alt hover:shadow-glow-sm",
+        "border-black/[0.10] bg-background-surface text-text-heading shadow-[0_1px_2px_rgba(28,27,24,0.06)] hover:border-primary/35 hover:bg-[#fffaf0]",
       ghost:
-        "bg-transparent text-text-muted hover:text-text-heading hover:bg-black/[0.03] rounded-xl",
+        "border-transparent bg-transparent text-text-muted hover:border-black/[0.06] hover:bg-black/[0.04] hover:text-text-heading",
       destructive:
-        "bg-status-error/90 text-white rounded-xl hover:bg-status-error shadow-sm hover:shadow-md",
+        "border-status-error bg-status-error text-white shadow-[0_1px_2px_rgba(220,38,38,0.16)] hover:bg-status-error/90",
     };
 
     const sizes = {
-      sm: "h-9 px-4 text-xs",
-      md: "h-11 px-6 text-sm",
-      lg: "h-13 px-8 text-base",
-      icon: "h-11 w-11",
+      sm: "h-9 px-3.5 text-xs",
+      md: "h-11 px-5 text-sm",
+      lg: "h-12 px-6 text-sm sm:text-base",
+      icon: "h-11 w-11 p-0",
     };
 
     return (

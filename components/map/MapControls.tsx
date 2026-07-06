@@ -60,7 +60,7 @@ export function MapControls({
       {/* Hunt count badge */}
       <div className="absolute left-4 top-4 z-[1000]">
         <div className="flex items-center gap-2 rounded-2xl border border-black/[0.06] bg-background-surface/90 px-4 py-2.5 shadow-glass backdrop-blur-xl">
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-gold-600 text-xs font-bold text-primary-foreground">
+          <span className="flex h-6 min-w-8 items-center justify-center rounded-lg bg-primary px-1.5 text-xs font-bold text-text-heading">
             {huntCount ?? 0}
           </span>
           <span className="text-sm font-medium text-text-heading">{label}</span>

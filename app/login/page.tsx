@@ -7,7 +7,6 @@ import Image from "next/image";
 import { Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
 import { Button, Card, Input } from "@/components/ui";
 import { AuroraBackground } from "@/components/ui/aurora-background";
-import { BlurText } from "@/components/ui/blur-text";
 import { Alert } from "@/components/shared";
 import { useAuthStore } from "@/lib/stores";
 import { loginSchema } from "@/lib/validations";
@@ -83,12 +82,9 @@ export default function LoginPage() {
             />
           </Link>
           <div className="space-y-2">
-            <BlurText
-              delay={0.2}
-              className="font-heading text-4xl font-bold text-text-heading"
-            >
+            <h1 className="font-heading text-4xl font-bold text-text-heading">
               Connexion
-            </BlurText>
+            </h1>
             <p className="text-text-muted">Ravi de vous revoir, aventurier !</p>
           </div>
         </div>

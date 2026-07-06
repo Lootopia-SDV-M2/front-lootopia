@@ -99,6 +99,102 @@ export interface Player {
   createdAt: string;
 }
 
+// Artefact and marketplace types
+export type ArtefactRarity = "common" | "rare" | "epic" | "legendary";
+
+export type ArtefactCategory =
+  | "history"
+  | "art"
+  | "nature"
+  | "mystery"
+  | "technology"
+  | "culture";
+
+export interface Artefact {
+  id: string;
+  name: string;
+  description: string;
+  rarity: ArtefactRarity;
+  category: ArtefactCategory;
+  imageUrl: string | null;
+  xpBonus: number;
+  originHuntId: string | null;
+  ownerId: string | null;
+  acquiredAt: string;
+  isTradable: boolean;
+}
+
+export interface Wallet {
+  userId: string;
+  balancePol: number;
+  updatedAt: string;
+}
+
+export type ListingType = "fixed_price" | "auction";
+
+export type ListingStatus = "active" | "sold" | "cancelled" | "expired";
+
+export interface MarketListing {
+  id: string;
+  artefact: Artefact;
+  sellerId: string;
+  sellerName: string;
+  type: ListingType;
+  status: ListingStatus;
+  pricePol: number;
+  currentBidPol?: number;
+  endsAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type MarketplaceTransactionType =
+  | "purchase"
+  | "sale"
+  | "reward"
+  | "adjustment";
+
+export type MarketplaceTransactionStatus =
+  | "pending"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export interface MarketplaceTransaction {
+  id: string;
+  type: MarketplaceTransactionType;
+  status: MarketplaceTransactionStatus;
+  listingId: string | null;
+  artefactId: string | null;
+  buyerId: string | null;
+  sellerId: string | null;
+  amountPol: number;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface CreateListingInput {
+  artefactId: string;
+  type: ListingType;
+  pricePol: number;
+  endsAt?: string;
+}
+
+export interface MarketplaceFilters {
+  rarity?: ArtefactRarity;
+  category?: ArtefactCategory;
+  type?: ListingType;
+  status?: ListingStatus;
+  maxPricePol?: number;
+}
+
+export interface BuyListingResult {
+  listing: MarketListing;
+  transaction: MarketplaceTransaction;
+  wallet: Wallet;
+  artefact: Artefact;
+}
+
 // XP required for each level
 export const XP_PER_LEVEL: Record<PlayerLevel, number> = {
   1: 0,

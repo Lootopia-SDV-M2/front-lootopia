@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useMemo, useState } from "react";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import { useGeolocationStore } from "@/lib/stores";
 import { mockHunts } from "@/lib/data/mock-hunts";
 import { HuntMarker } from "./HuntMarker";
@@ -30,9 +36,15 @@ interface GameMapProps {
   isPartner?: boolean;
 }
 
-// Default center (Paris)
-const DEFAULT_CENTER: [number, number] = [48.8566, 2.3522];
-const DEFAULT_ZOOM = 13;
+// Default center over mainland France.
+const DEFAULT_CENTER: [number, number] = [46.6034, 1.8883];
+const DEFAULT_ZOOM = 6;
+
+interface HuntCluster {
+  id: string;
+  position: [number, number];
+  hunts: Hunt[];
+}
 
 /**
  * Component to handle map centering on user position
@@ -47,6 +59,130 @@ function MapCenterController({ center }: { center: [number, number] | null }) {
   }, [center, map]);
 
   return null;
+}
+
+function getClusterCellSize(zoom: number): number {
+  if (zoom <= 5) return 96;
+  if (zoom <= 7) return 76;
+  if (zoom <= 9) return 58;
+  if (zoom <= 11) return 42;
+  return 1;
+}
+
+function createClusterIcon(count: number): L.DivIcon {
+  const size = count >= 100 ? 54 : count >= 25 ? 48 : 42;
+
+  return L.divIcon({
+    className: "hunt-cluster-marker",
+    html: `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 999px;
+        background: #2a2418;
+        border: 3px solid #fff8e6;
+        box-shadow: 0 6px 18px rgba(28,27,24,0.2);
+        color: #fff8e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+      ">
+        ${count}
+      </div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+}
+
+function ClusteredHuntMarkers({
+  hunts,
+  onHuntClick,
+}: {
+  hunts: Hunt[];
+  onHuntClick: (hunt: Hunt) => void;
+}) {
+  const map = useMapEvents({
+    moveend: () => {
+      setView({ zoom: map.getZoom(), bounds: map.getBounds() });
+    },
+    zoomend: () => {
+      setView({ zoom: map.getZoom(), bounds: map.getBounds() });
+    },
+  });
+  const [view, setView] = useState(() => ({
+    zoom: map.getZoom(),
+    bounds: map.getBounds(),
+  }));
+
+  const clusters = useMemo<HuntCluster[]>(() => {
+    const paddedBounds = view.bounds.pad(0.25);
+    const visibleHunts = hunts.filter((hunt) =>
+      paddedBounds.contains([hunt.latitude, hunt.longitude])
+    );
+    const cellSize = getClusterCellSize(view.zoom);
+
+    if (cellSize <= 1) {
+      return visibleHunts.map((hunt) => ({
+        id: hunt.id,
+        position: [hunt.latitude, hunt.longitude],
+        hunts: [hunt],
+      }));
+    }
+
+    const buckets = new Map<string, Hunt[]>();
+
+    visibleHunts.forEach((hunt) => {
+      const point = map.project([hunt.latitude, hunt.longitude], view.zoom);
+      const key = `${Math.floor(point.x / cellSize)}:${Math.floor(
+        point.y / cellSize
+      )}`;
+      buckets.set(key, [...(buckets.get(key) ?? []), hunt]);
+    });
+
+    return Array.from(buckets.entries()).map(([key, bucket]) => {
+      const latitude =
+        bucket.reduce((sum, hunt) => sum + hunt.latitude, 0) / bucket.length;
+      const longitude =
+        bucket.reduce((sum, hunt) => sum + hunt.longitude, 0) / bucket.length;
+
+      return {
+        id: `${key}:${bucket.length}`,
+        position: [latitude, longitude],
+        hunts: bucket,
+      };
+    });
+  }, [hunts, map, view.bounds, view.zoom]);
+
+  return (
+    <>
+      {clusters.map((cluster) =>
+        cluster.hunts.length === 1 ? (
+          <HuntMarker
+            key={cluster.hunts[0].id}
+            hunt={cluster.hunts[0]}
+            onClick={onHuntClick}
+          />
+        ) : (
+          <Marker
+            key={cluster.id}
+            position={cluster.position}
+            icon={createClusterIcon(cluster.hunts.length)}
+            eventHandlers={{
+              click: () => {
+                const bounds = L.latLngBounds(
+                  cluster.hunts.map((hunt) => [hunt.latitude, hunt.longitude])
+                );
+                map.fitBounds(bounds.pad(0.35), { maxZoom: 12 });
+              },
+            }}
+          />
+        )
+      )}
+    </>
+  );
 }
 
 /**
@@ -129,10 +265,10 @@ export function GameMap({
           />
         )}
 
-        {/* Hunt markers */}
-        {displayedHunts.map((hunt) => (
-          <HuntMarker key={hunt.id} hunt={hunt} onClick={handleHuntClick} />
-        ))}
+        <ClusteredHuntMarkers
+          hunts={displayedHunts}
+          onHuntClick={handleHuntClick}
+        />
       </MapContainer>
 
       {/* Map controls overlay */}

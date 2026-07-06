@@ -131,22 +131,24 @@ function RegisterForm() {
                 type="button"
                 onClick={() => setSelectedRole("CHERCHEUR")}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-300",
+                  "relative flex min-h-28 flex-col items-start gap-3 rounded-md border p-4 text-left transition-[background-color,border-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2",
                   selectedRole === "CHERCHEUR"
-                    ? "border-primary/40 bg-primary/[0.08] text-primary shadow-glow-sm"
-                    : "border-black/[0.06] bg-background-surface text-text-muted hover:border-black/[0.08]"
+                    ? "border-primary/45 bg-[#fff8e6] text-text-heading shadow-[0_1px_3px_rgba(200,154,14,0.16)]"
+                    : "border-black/[0.08] bg-background-surface text-text-heading hover:border-black/[0.14] hover:bg-background-surface-alt"
                 )}
               >
                 {selectedRole === "CHERCHEUR" && (
-                  <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                  <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-text-heading">
                     &#10003;
                   </div>
                 )}
-                <Search className="h-7 w-7" />
-                <span className="font-heading text-sm font-bold">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md border border-black/[0.06] bg-background-surface-alt">
+                  <Search className="h-5 w-5 text-primary" />
+                </span>
+                <span className="font-sans text-sm font-semibold">
                   Chercheur
                 </span>
-                <span className="text-[11px] opacity-60">
+                <span className="text-xs leading-snug text-text-muted">
                   Participer aux chasses
                 </span>
               </button>
@@ -154,22 +156,24 @@ function RegisterForm() {
                 type="button"
                 onClick={() => setSelectedRole("ORGANISATEUR")}
                 className={cn(
-                  "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-300",
+                  "relative flex min-h-28 flex-col items-start gap-3 rounded-md border p-4 text-left transition-[background-color,border-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/35 focus-visible:ring-offset-2",
                   selectedRole === "ORGANISATEUR"
-                    ? "border-secondary/40 bg-secondary/[0.08] text-secondary shadow-[0_0_20px_rgba(232,121,165,0.1)]"
-                    : "border-black/[0.06] bg-background-surface text-text-muted hover:border-black/[0.08]"
+                    ? "border-secondary/45 bg-[#fff2f6] text-text-heading shadow-[0_1px_3px_rgba(201,95,132,0.14)]"
+                    : "border-black/[0.08] bg-background-surface text-text-heading hover:border-black/[0.14] hover:bg-background-surface-alt"
                 )}
               >
                 {selectedRole === "ORGANISATEUR" && (
-                  <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white">
+                  <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white">
                     &#10003;
                   </div>
                 )}
-                <Crown className="h-7 w-7" />
-                <span className="font-heading text-sm font-bold">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md border border-black/[0.06] bg-background-surface-alt">
+                  <Crown className="h-5 w-5 text-secondary" />
+                </span>
+                <span className="font-sans text-sm font-semibold">
                   Organisateur
                 </span>
-                <span className="text-[11px] opacity-60">
+                <span className="text-xs leading-snug text-text-muted">
                   Créer des chasses
                 </span>
               </button>

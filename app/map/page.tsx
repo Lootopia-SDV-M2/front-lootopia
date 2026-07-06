@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import DynamicMap from "@/components/map/DynamicMap";
 import { useAuthStore } from "@/lib/stores";
 import { huntApi, type HuntSummaryDTO } from "@/lib/api/hunt-api";
+import { mockHunts } from "@/lib/data/mock-hunts";
 import type { Hunt, HuntDifficulty } from "@/types";
 
 function mapSummaryToHunt(dto: HuntSummaryDTO): Hunt {
@@ -36,9 +37,10 @@ export default function MapPage() {
         const data = isPartner
           ? await huntApi.getMyHunts()
           : await huntApi.getPublishedHunts();
-        setHunts(data.map(mapSummaryToHunt));
+        const apiHunts = data.map(mapSummaryToHunt);
+        setHunts(apiHunts.length > 0 ? apiHunts : mockHunts);
       } catch {
-        setHunts([]);
+        setHunts(mockHunts);
       } finally {
         setLoading(false);
       }
