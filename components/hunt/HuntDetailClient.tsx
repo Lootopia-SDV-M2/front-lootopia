@@ -17,13 +17,47 @@ import {
 import { Button, Card, Badge } from "@/components/ui";
 import { Alert, VictoryModal } from "@/components/shared";
 import { useGeolocationStore, usePlayerStore } from "@/lib/stores";
+import { huntApi, type HuntResponseDTO } from "@/lib/api/hunt-api";
 import {
   getHuntById,
   getDifficultyLabel,
   calculateDistance,
 } from "@/lib/data/mock-hunts";
 import { cn } from "@/lib/utils";
-import type { Hunt, HuntStep, CompletedHunt } from "@/types";
+import type { Hunt, HuntStep, CompletedHunt, HuntDifficulty } from "@/types";
+
+function mapResponseToHunt(dto: HuntResponseDTO): Hunt {
+  return {
+    id: String(dto.id),
+    title: dto.title,
+    description: dto.description,
+    difficulty: (dto.difficulty?.toLowerCase() as HuntDifficulty) || "medium",
+    latitude: 0,
+    longitude: 0,
+    reward: dto.rewards?.length ?? 0,
+    duration: dto.duration,
+    participantsCount: 0,
+    maxParticipants: dto.maxParticipants,
+    createdAt: dto.createdAt,
+    steps: dto.steps.map((s) => ({
+      id: String(s.id),
+      order: s.orderIndex,
+      title: s.title,
+      description: s.description,
+      latitude: s.latitude,
+      longitude: s.longitude,
+      radius: s.radius,
+      completed: false,
+      clues: [],
+    })),
+    rewards: dto.rewards.map((r) => ({
+      id: String(r.id),
+      name: r.name,
+      imageUrl: r.imageUrl,
+      winnerId: r.winnerId ? String(r.winnerId) : null,
+    })),
+  };
+}
 
 interface HuntDetailClientProps {
   huntId: string;
@@ -31,7 +65,8 @@ interface HuntDetailClientProps {
 
 export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   const router = useRouter();
-  const hunt = getHuntById(huntId);
+  const [hunt, setHunt] = useState<Hunt | null>(() => getHuntById(huntId));
+  const [loading, setLoading] = useState(!getHuntById(huntId));
   const {
     position,
     requestGeolocation,
@@ -52,6 +87,25 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   const allStepsCompleted = hunt?.steps?.every((s) => completedSteps.has(s.id));
 
   useEffect(() => {
+    if (!hunt) {
+      const numId = parseInt(huntId, 10);
+      if (!isNaN(numId)) {
+        huntApi
+          .getHuntById(numId)
+          .then((dto) => {
+            setHunt(mapResponseToHunt(dto));
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [hunt, huntId]);
+
+  useEffect(() => {
     requestGeolocation();
   }, [requestGeolocation]);
 
@@ -66,6 +120,17 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
       setDistance(Math.round(dist));
     }
   }, [position, currentStep]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto flex max-w-2xl items-center justify-center px-4 py-20">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+          <p className="text-text-muted">Chargement de la chasse...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!hunt) {
     return (
