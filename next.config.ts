@@ -5,15 +5,6 @@ const withPWA = withPWAInit({
   dest: "public",
 });
 
-const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-    ],
-  },
-};
+const nextConfig: NextConfig = {};
 
 export default withPWA(nextConfig);
