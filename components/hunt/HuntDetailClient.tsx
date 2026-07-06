@@ -65,7 +65,9 @@ interface HuntDetailClientProps {
 
 export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   const router = useRouter();
-  const [hunt, setHunt] = useState<Hunt | null>(() => getHuntById(huntId));
+  const [hunt, setHunt] = useState<Hunt | null>(
+    () => getHuntById(huntId) ?? null
+  );
   const [loading, setLoading] = useState(!getHuntById(huntId));
   const {
     position,
