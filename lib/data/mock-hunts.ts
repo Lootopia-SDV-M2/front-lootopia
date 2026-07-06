@@ -103,6 +103,7 @@ export const mockHunts: Hunt[] = [
     maxParticipants: 20,
     createdAt: "2026-01-10T10:00:00Z",
     startsAt: "2026-01-20T14:00:00Z",
+    imageUrl: "/images/hunts/hunt-001.jpg",
     steps: createSteps("hunt-001", 48.8566, 2.3522),
   },
   {
@@ -119,6 +120,7 @@ export const mockHunts: Hunt[] = [
     maxParticipants: 15,
     createdAt: "2026-01-08T14:30:00Z",
     startsAt: "2026-01-22T10:00:00Z",
+    imageUrl: "/images/hunts/hunt-002.jpg",
     steps: createSteps("hunt-002", 48.8867, 2.3431),
   },
   {
@@ -135,6 +137,7 @@ export const mockHunts: Hunt[] = [
     maxParticipants: 10,
     createdAt: "2026-01-05T09:00:00Z",
     startsAt: "2026-01-25T11:00:00Z",
+    imageUrl: "/images/hunts/hunt-003.jpg",
     steps: createSteps("hunt-003", 48.8584, 2.2945),
   },
   {
@@ -151,6 +154,7 @@ export const mockHunts: Hunt[] = [
     maxParticipants: 8,
     createdAt: "2026-01-12T16:00:00Z",
     startsAt: "2026-01-28T09:00:00Z",
+    imageUrl: "/images/hunts/hunt-004.jpg",
     steps: createSteps("hunt-004", 48.8339, 2.3324),
   },
   {
@@ -166,6 +170,7 @@ export const mockHunts: Hunt[] = [
     participantsCount: 18,
     maxParticipants: 25,
     createdAt: "2026-01-14T11:00:00Z",
+    imageUrl: "/images/hunts/hunt-005.jpg",
     steps: createSteps("hunt-005", 48.8462, 2.3372),
   },
   {
@@ -182,6 +187,7 @@ export const mockHunts: Hunt[] = [
     maxParticipants: 12,
     createdAt: "2026-01-13T13:00:00Z",
     startsAt: "2026-01-30T15:00:00Z",
+    imageUrl: "/images/hunts/hunt-006.jpg",
     steps: createSteps("hunt-006", 48.8918, 2.2362),
   },
 ];

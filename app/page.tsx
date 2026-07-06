@@ -157,8 +157,15 @@ function HuntCard({ hunt }: { hunt: Hunt }) {
     <Card variant="interactive" className="group overflow-hidden">
       {/* Image area */}
       <div className="relative h-44 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
-        <div className="h-full w-full bg-background-surface-alt transition-transform duration-700 group-hover:scale-105" />
+        {hunt.imageUrl ? (
+          <img
+            src={hunt.imageUrl}
+            alt={hunt.title}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-background-surface via-transparent to-transparent" />
         <div className="absolute right-3 top-3">
           <Badge variant="primary">{getDifficultyLabel(hunt.difficulty)}</Badge>

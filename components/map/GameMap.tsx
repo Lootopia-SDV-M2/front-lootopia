@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useGeolocationStore } from "@/lib/stores";
 import { mockHunts } from "@/lib/data/mock-hunts";
@@ -72,17 +72,18 @@ export function GameMap({
     requestGeolocation,
   } = useGeolocationStore();
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
+  const geolocationStartedRef = useRef(false);
 
   const displayedHunts = hunts ?? mockHunts;
 
   useEffect(() => {
-    const watchId = watchPosition();
-    return () => {
-      if (watchId !== null) {
-        clearWatch(watchId);
-      }
-    };
-  }, [watchPosition, clearWatch]);
+    // Destructuring creates new references on every render.
+    // Wrap in ref so this effect only runs once on mount.
+    const started = geolocationStartedRef.current;
+    if (started) return;
+    geolocationStartedRef.current = true;
+    watchPosition();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (position && !mapCenter) {
@@ -119,8 +120,10 @@ export function GameMap({
         zoomControl={false}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={19}
         />
 
         <MapCenterController center={mapCenter} />

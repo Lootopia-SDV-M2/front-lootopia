@@ -10,6 +10,8 @@ interface GeolocationState {
   error: string | null;
   /** Whether user has granted permission */
   hasPermission: boolean | null;
+  /** Internal: active watch ID */
+  _watchId: number | null;
   /** Update user position */
   setPosition: (position: GeoPosition) => void;
   /** Set loading state */
@@ -35,11 +37,12 @@ export const useGeolocationStore = create<GeolocationState>((set, get) => ({
   isLoading: false,
   error: null,
   hasPermission: null,
+  _watchId: null,
 
   setPosition: (position) => set({ position, error: null }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error, isLoading: false }),
-  setPermission: (hasPermission) => set({ hasPermission }),
+  setPermission: (granted) => set({ hasPermission: granted }),
 
   requestGeolocation: async () => {
     if (!navigator.geolocation) {
@@ -101,6 +104,11 @@ export const useGeolocationStore = create<GeolocationState>((set, get) => ({
       return null;
     }
 
+    const existing = get()._watchId;
+    if (existing !== null) {
+      navigator.geolocation.clearWatch(existing);
+    }
+
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         set({
@@ -129,6 +137,7 @@ export const useGeolocationStore = create<GeolocationState>((set, get) => ({
       }
     );
 
+    set({ _watchId: watchId });
     return watchId;
   },
 
@@ -136,5 +145,6 @@ export const useGeolocationStore = create<GeolocationState>((set, get) => ({
     if (navigator.geolocation) {
       navigator.geolocation.clearWatch(watchId);
     }
+    set({ _watchId: null });
   },
 }));
