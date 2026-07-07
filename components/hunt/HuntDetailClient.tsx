@@ -19,6 +19,8 @@ import { Alert, VictoryModal } from "@/components/shared";
 import { useGeolocationStore, usePlayerStore } from "@/lib/stores";
 import { huntApi, type HuntResponseDTO } from "@/lib/api/hunt-api";
 import {
+  DEMO_USER_POSITION_HUNT_ID,
+  createDemoUserPositionHunt,
   getHuntById,
   getDifficultyLabel,
   calculateDistance,
@@ -65,10 +67,14 @@ interface HuntDetailClientProps {
 
 export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   const router = useRouter();
-  const [hunt, setHunt] = useState<Hunt | null>(
-    () => getHuntById(huntId) ?? null
+  const [hunt, setHunt] = useState<Hunt | null>(() =>
+    huntId === DEMO_USER_POSITION_HUNT_ID
+      ? createDemoUserPositionHunt()
+      : (getHuntById(huntId) ?? null)
   );
-  const [loading, setLoading] = useState(!getHuntById(huntId));
+  const [loading, setLoading] = useState(
+    huntId !== DEMO_USER_POSITION_HUNT_ID && !getHuntById(huntId)
+  );
   const {
     position,
     requestGeolocation,
@@ -89,6 +95,11 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   const allStepsCompleted = hunt?.steps?.every((s) => completedSteps.has(s.id));
 
   useEffect(() => {
+    if (huntId === DEMO_USER_POSITION_HUNT_ID) {
+      setLoading(false);
+      return;
+    }
+
     if (!hunt) {
       const numId = parseInt(huntId, 10);
       if (!isNaN(numId)) {
@@ -110,6 +121,14 @@ export function HuntDetailClient({ huntId }: HuntDetailClientProps) {
   useEffect(() => {
     requestGeolocation();
   }, [requestGeolocation]);
+
+  useEffect(() => {
+    if (huntId === DEMO_USER_POSITION_HUNT_ID && position) {
+      setHunt(
+        createDemoUserPositionHunt(position.latitude, position.longitude)
+      );
+    }
+  }, [huntId, position]);
 
   useEffect(() => {
     if (position && currentStep) {

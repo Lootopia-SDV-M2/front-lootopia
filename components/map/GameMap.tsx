@@ -9,7 +9,7 @@ import {
   useMapEvents,
 } from "react-leaflet";
 import { useGeolocationStore } from "@/lib/stores";
-import { mockHunts } from "@/lib/data/mock-hunts";
+import { mockHunts, withDemoHuntAtPosition } from "@/lib/data/mock-hunts";
 import { HuntMarker } from "./HuntMarker";
 import { UserMarker } from "./UserMarker";
 import { MapControls } from "./MapControls";
@@ -206,7 +206,10 @@ export function GameMap({
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null);
   const [selectedHunt, setSelectedHunt] = useState<Hunt | null>(null);
 
-  const displayedHunts = hunts ?? mockHunts;
+  const displayedHunts = useMemo(
+    () => withDemoHuntAtPosition(hunts ?? mockHunts, position),
+    [hunts, position]
+  );
 
   // Use watchPosition for continuous GPS tracking
   useEffect(() => {

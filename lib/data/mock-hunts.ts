@@ -1,5 +1,7 @@
 import type { Hunt, HuntDifficulty, HuntStep } from "@/types";
 
+export const DEMO_USER_POSITION_HUNT_ID = "hunt-demo-user-position";
+
 const DIFFICULTIES: HuntDifficulty[] = ["easy", "medium", "hard", "expert"];
 
 const CITY_ANCHORS = [
@@ -198,9 +200,106 @@ function createMockHunt(index: number): Hunt {
   };
 }
 
-export const mockHunts: Hunt[] = Array.from({ length: 500 }, (_, index) =>
-  createMockHunt(index)
-);
+export function createDemoUserPositionHunt(
+  latitude = 48.8566,
+  longitude = 2.3522
+): Hunt {
+  const id = DEMO_USER_POSITION_HUNT_ID;
+
+  return {
+    id,
+    title: "Demo live - autour de vous",
+    description:
+      "Une chasse de demonstration toujours placee sur votre position pour tester le parcours complet sans preparer de lieu.",
+    difficulty: "easy",
+    latitude,
+    longitude,
+    reward: 100,
+    duration: "10 min",
+    participantsCount: 1,
+    maxParticipants: 99,
+    createdAt: new Date(Date.UTC(2026, 0, 1)).toISOString(),
+    startsAt: new Date(Date.UTC(2026, 0, 1, 10)).toISOString(),
+    imageUrl: "/images/hunts/hunt-001.jpg",
+    steps: [
+      {
+        id: `${id}-step-1`,
+        order: 1,
+        title: "Confirmer votre point de depart",
+        description:
+          "Cette premiere etape valide que la geolocalisation fonctionne sur l'appareil de demo.",
+        latitude,
+        longitude,
+        radius: 80,
+        completed: false,
+        clues: [
+          {
+            id: `${id}-clue-1-1`,
+            order: 1,
+            text: "Vous etes deja au bon endroit.",
+            unlocked: true,
+          },
+        ],
+      },
+      {
+        id: `${id}-step-2`,
+        order: 2,
+        title: "Lire l'indice exemple",
+        description:
+          "Cette etape montre comment un joueur progresse avec une consigne simple et un indice.",
+        latitude,
+        longitude,
+        radius: 80,
+        completed: false,
+        clues: [
+          {
+            id: `${id}-clue-2-1`,
+            order: 1,
+            text: "Dans une vraie chasse, cet indice guiderait vers un detail du lieu.",
+            unlocked: true,
+          },
+        ],
+      },
+      {
+        id: `${id}-step-3`,
+        order: 3,
+        title: "Terminer la demo",
+        description:
+          "Validez cette derniere etape pour declencher l'ecran de victoire et l'ajout d'XP.",
+        latitude,
+        longitude,
+        radius: 80,
+        completed: false,
+        clues: [
+          {
+            id: `${id}-clue-3-1`,
+            order: 1,
+            text: "Appuyez sur le bouton de validation pour finir le scenario.",
+            unlocked: true,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+export function withDemoHuntAtPosition(
+  hunts: Hunt[],
+  position?: { latitude: number; longitude: number } | null
+): Hunt[] {
+  const demoHunt = createDemoUserPositionHunt(
+    position?.latitude,
+    position?.longitude
+  );
+  const otherHunts = hunts.filter((hunt) => hunt.id !== demoHunt.id);
+
+  return [demoHunt, ...otherHunts];
+}
+
+export const mockHunts: Hunt[] = [
+  createDemoUserPositionHunt(),
+  ...Array.from({ length: 499 }, (_, index) => createMockHunt(index)),
+];
 
 export function getHuntById(id: string): Hunt | undefined {
   return mockHunts.find((hunt) => hunt.id === id);
