@@ -18,12 +18,12 @@ const CITY_ANCHORS = [
   ["Rennes", 48.1173, -1.6778],
   ["Reims", 49.2583, 4.0317],
   ["Le Havre", 49.4944, 0.1079],
-  ["Saint-Etienne", 45.4397, 4.3872],
+  ["Saint-Étienne", 45.4397, 4.3872],
   ["Toulon", 43.1242, 5.928],
   ["Grenoble", 45.1885, 5.7245],
   ["Dijon", 47.322, 5.0415],
   ["Angers", 47.4784, -0.5632],
-  ["Nimes", 43.8367, 4.3601],
+  ["Nîmes", 43.8367, 4.3601],
   ["Villeurbanne", 45.7719, 4.8902],
   ["Clermont-Ferrand", 45.7772, 3.087],
   ["Le Mans", 48.0061, 0.1996],
@@ -35,8 +35,8 @@ const CITY_ANCHORS = [
   ["Annecy", 45.8992, 6.1294],
   ["Perpignan", 42.6887, 2.8948],
   ["Metz", 49.1193, 6.1757],
-  ["Besancon", 47.2378, 6.0241],
-  ["Orleans", 47.9029, 1.9093],
+  ["Besançon", 47.2378, 6.0241],
+  ["Orléans", 47.9029, 1.9093],
   ["Rouen", 49.4431, 1.0993],
   ["Mulhouse", 47.7508, 7.3359],
   ["Caen", 49.1829, -0.3707],
@@ -51,21 +51,21 @@ const CITY_ANCHORS = [
   ["Vannes", 47.6582, -2.7608],
   ["Ajaccio", 41.9192, 8.7386],
   ["Bastia", 42.6973, 9.4509],
-  ["Chambery", 45.5646, 5.9178],
+  ["Chambéry", 45.5646, 5.9178],
   ["Valence", 44.9334, 4.8924],
   ["Laon", 49.5639, 3.6244],
   ["Biarritz", 43.4832, -1.5586],
 ] as const;
 
 const THEMES = [
-  "Tresor urbain",
-  "Mystere historique",
+  "Trésor urbain",
+  "Mystère historique",
   "Parcours gourmand",
-  "Legende locale",
-  "Defi photo",
+  "Légende locale",
+  "Défi photo",
   "Secret de quartier",
   "Balade nature",
-  "Enigme patrimoine",
+  "Énigme patrimoine",
   "Mission famille",
   "Route des artisans",
 ] as const;
@@ -79,8 +79,8 @@ function createSteps(
     {
       id: `${huntId}-step-1`,
       order: 1,
-      title: "Point de depart",
-      description: "Rendez-vous au point de depart pour commencer l'aventure.",
+      title: "Point de départ",
+      description: "Rendez-vous au point de départ pour commencer l'aventure.",
       latitude: baseLatitude + 0.001,
       longitude: baseLongitude + 0.001,
       radius: 20,
@@ -89,13 +89,13 @@ function createSteps(
         {
           id: `${huntId}-clue-1-1`,
           order: 1,
-          text: "Cherchez pres du lieu le plus anime.",
+          text: "Cherchez près du lieu le plus animé.",
           unlocked: true,
         },
         {
           id: `${huntId}-clue-1-2`,
           order: 2,
-          text: "Un detail grave vous donnera la suite.",
+          text: "Un détail gravé vous donnera la suite.",
           unlocked: false,
         },
       ],
@@ -103,8 +103,8 @@ function createSteps(
     {
       id: `${huntId}-step-2`,
       order: 2,
-      title: "Indice cache",
-      description: "Trouvez le prochain indice pour avancer dans la quete.",
+      title: "Indice caché",
+      description: "Trouvez le prochain indice pour avancer dans la quête.",
       latitude: baseLatitude + 0.002,
       longitude: baseLongitude - 0.001,
       radius: 20,
@@ -127,8 +127,8 @@ function createSteps(
     {
       id: `${huntId}-step-3`,
       order: 3,
-      title: "Tresor final",
-      description: "Le tresor vous attend a la derniere etape.",
+      title: "Trésor final",
+      description: "Le trésor vous attend à la dernière étape.",
       latitude: baseLatitude,
       longitude: baseLongitude,
       radius: 20,
@@ -137,7 +137,7 @@ function createSteps(
         {
           id: `${huntId}-clue-3-1`,
           order: 1,
-          text: "Vous y etes presque.",
+          text: "Vous y êtes presque.",
           unlocked: true,
         },
         {
@@ -181,7 +181,7 @@ function createMockHunt(index: number): Hunt {
   return {
     id,
     title: `${theme} - ${city} #${localIndex + 1}`,
-    description: `Une chasse ${getDifficultyLabel(difficulty).toLowerCase()} autour de ${city}, avec indices geolocalises, observation et recompense XP.`,
+    description: `Une chasse ${getDifficultyLabel(difficulty).toLowerCase()} autour de ${city}, avec indices géolocalisés, observation et récompense XP.`,
     difficulty,
     latitude,
     longitude,
@@ -208,9 +208,9 @@ export function createDemoUserPositionHunt(
 
   return {
     id,
-    title: "Demo live - autour de vous",
+    title: "Démo live - autour de vous",
     description:
-      "Une chasse de demonstration toujours placee sur votre position pour tester le parcours complet sans preparer de lieu.",
+      "Une chasse de démonstration toujours placée sur votre position pour tester le parcours complet sans préparer de lieu.",
     difficulty: "easy",
     latitude,
     longitude,
@@ -225,9 +225,9 @@ export function createDemoUserPositionHunt(
       {
         id: `${id}-step-1`,
         order: 1,
-        title: "Confirmer votre point de depart",
+        title: "Confirmer votre point de départ",
         description:
-          "Cette premiere etape valide que la geolocalisation fonctionne sur l'appareil de demo.",
+          "Cette première étape valide que la géolocalisation fonctionne sur l'appareil de démo.",
         latitude,
         longitude,
         radius: 80,
@@ -236,7 +236,7 @@ export function createDemoUserPositionHunt(
           {
             id: `${id}-clue-1-1`,
             order: 1,
-            text: "Vous etes deja au bon endroit.",
+            text: "Vous êtes déjà au bon endroit.",
             unlocked: true,
           },
         ],
@@ -246,7 +246,7 @@ export function createDemoUserPositionHunt(
         order: 2,
         title: "Lire l'indice exemple",
         description:
-          "Cette etape montre comment un joueur progresse avec une consigne simple et un indice.",
+          "Cette étape montre comment un joueur progresse avec une consigne simple et un indice.",
         latitude,
         longitude,
         radius: 80,
@@ -255,7 +255,7 @@ export function createDemoUserPositionHunt(
           {
             id: `${id}-clue-2-1`,
             order: 1,
-            text: "Dans une vraie chasse, cet indice guiderait vers un detail du lieu.",
+            text: "Dans une vraie chasse, cet indice guiderait vers un détail du lieu.",
             unlocked: true,
           },
         ],
@@ -263,9 +263,9 @@ export function createDemoUserPositionHunt(
       {
         id: `${id}-step-3`,
         order: 3,
-        title: "Terminer la demo",
+        title: "Terminer la démo",
         description:
-          "Validez cette derniere etape pour declencher l'ecran de victoire et l'ajout d'XP.",
+          "Validez cette dernière étape pour déclencher l'écran de victoire et l'ajout d'XP.",
         latitude,
         longitude,
         radius: 80,
@@ -274,7 +274,7 @@ export function createDemoUserPositionHunt(
           {
             id: `${id}-clue-3-1`,
             order: 1,
-            text: "Appuyez sur le bouton de validation pour finir le scenario.",
+            text: "Appuyez sur le bouton de validation pour finir le scénario.",
             unlocked: true,
           },
         ],

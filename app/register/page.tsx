@@ -243,7 +243,7 @@ function RegisterForm() {
           {selectedRole === "ORGANISATEUR" && (
             <div>
               <label className="mb-1.5 block text-xs font-medium tracking-wider text-text-muted">
-                Numero SIRET
+                Numéro SIRET
               </label>
               <div className="relative">
                 <Building2 className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
@@ -259,7 +259,7 @@ function RegisterForm() {
                 />
               </div>
               <p className="mt-1 text-xs text-text-muted">
-                Ce numero sera analyse par l&apos;equipe avant validation.
+                Ce numéro sera analysé par l&apos;équipe avant validation.
               </p>
               {validationErrors.siret && (
                 <p className="mt-1 text-xs text-status-error">

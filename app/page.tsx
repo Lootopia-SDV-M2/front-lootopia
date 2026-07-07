@@ -21,7 +21,7 @@ function HeroSection() {
           <div className="mb-6 inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/[0.06] px-3 py-1.5">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             <span className="text-xs font-medium tracking-wide text-primary">
-              Chasse au tresor geolocalisee
+              Chasse au trésor géolocalisée
             </span>
           </div>
 
@@ -48,7 +48,7 @@ function HeroSection() {
                 className="w-full sm:w-auto"
               >
                 <Rocket className="h-5 w-5" />
-                Creer une chasse
+                Créer une chasse
               </Button>
             </Link>
           </div>
@@ -122,12 +122,12 @@ function HowItWorksSection() {
     {
       icon: Compass,
       title: "Explorez",
-      description: "Suivez les indices et validez les etapes sur le terrain.",
+      description: "Suivez les indices et validez les étapes sur le terrain.",
     },
     {
       icon: Gem,
       title: "Gagnez",
-      description: "Debloquez XP, recompenses et artefacts de collection.",
+      description: "Débloquez XP, récompenses et artefacts de collection.",
     },
   ];
 
@@ -251,13 +251,13 @@ function PartnerCtaSection() {
                 Devenez partenaire
               </h2>
               <p className="mt-3 max-w-2xl leading-relaxed text-text-muted">
-                Musees, villes, associations : creez des experiences
-                geolocalisees et suivez les participations depuis l'app.
+                Musées, villes, associations : créez des expériences
+                géolocalisées et suivez les participations depuis l'app.
               </p>
             </div>
             <Link href="/register?role=organisateur">
               <Button variant="primary" size="lg" className="w-full sm:w-auto">
-                Creer une chasse
+                Créer une chasse
                 <Trophy className="h-4 w-4" />
               </Button>
             </Link>

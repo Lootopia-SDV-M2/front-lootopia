@@ -29,7 +29,7 @@ const initialArtefacts: Artefact[] = [
     id: "artefact-002",
     name: "Jeton des Catacombes",
     description:
-      "Un jeton grave d'un symbole discret, trouve au bout d'un parcours souterrain.",
+      "Un jeton gravé d'un symbole discret, trouvé au bout d'un parcours souterrain.",
     rarity: "epic",
     category: "mystery",
     imageUrl: "/images/artefacts/token.jpg",
@@ -58,9 +58,9 @@ const initialArtefacts: Artefact[] = [
 const marketplaceArtefacts: Artefact[] = [
   {
     id: "artefact-101",
-    name: "Cle doree du Luxembourg",
+    name: "Clé dorée du Luxembourg",
     description:
-      "Une petite cle ceremonielle associee aux enigmes du jardin royal.",
+      "Une petite clé cérémonielle associée aux énigmes du jardin royal.",
     rarity: "legendary",
     category: "culture",
     imageUrl: "/images/artefacts/golden-key.jpg",
@@ -88,7 +88,7 @@ const marketplaceArtefacts: Artefact[] = [
     id: "artefact-103",
     name: "Feuille de l'Orangerie",
     description:
-      "Une feuille preservee qui rappelle les parcours calmes et botaniques.",
+      "Une feuille préservée qui rappelle les parcours calmes et botaniques.",
     rarity: "common",
     category: "nature",
     imageUrl: "/images/artefacts/leaf.jpg",
@@ -222,7 +222,7 @@ export function createMockListing(input: CreateListingInput): MarketListing {
   }
 
   if (!artefact.isTradable) {
-    throw new Error("Cet artefact ne peut pas etre mis en vente");
+    throw new Error("Cet artefact ne peut pas être mis en vente");
   }
 
   const createdAt = nowIso();
